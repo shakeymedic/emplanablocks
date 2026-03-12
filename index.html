@@ -16,7 +16,6 @@
     }
   </script>
   <style>
-    /* 4-Phase Clinical Animation Sequence: Scan (0-20%), Approach (20-45%), Aspirate/Pause (45-60%), Inject/Hydrodissect (60-100%) */
     @keyframes scanSweep {
       0% { transform: translateX(30px); }
       10% { transform: translateX(-15px); }
@@ -212,21 +211,20 @@
         position: 'Lateral or Supine',
         equipment: 'High-frequency linear probe. 50mm echogenic needle.',
         target: 'Intercostal nerves (Lateral cutaneous branches T2-T9)',
+        goldenRule: 'Never lose sight of the needle tip. The pleura lies directly below your target plane.',
         indications: ['Lateral rib fractures', 'Anterior rib fractures', 'Thoracostomy tube placement'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Coagulopathy', 'Distorted anatomy'] },
         effects: ['Analgesia to the lateral chest wall'],
         technique: [
-          'Position patient supine or lateral.',
-          'Place probe transversely at mid-axillary line over the 5th rib.',
-          'Identify latissimus dorsi and serratus anterior muscles.',
-          'Identify bright pleural line between ribs.',
-          'Insert needle in-plane, anterior to posterior.',
-          'Advance tip into fascial plane superficial to serratus anterior.',
-          'Aspirate and inject 20-30ml of local anaesthetic to hydrodissect.'
+          '<strong>Setup:</strong> Position the patient supine or lateral. Abduct the arm to expose the axilla.',
+          '<strong>Scanning:</strong> Place the linear probe transversely at the mid-axillary line over the 5th rib.',
+          '<strong>Identification:</strong> Identify the latissimus dorsi (superficial) and serratus anterior (deep) muscles. Find the bright pleural line between the ribs.',
+          '<strong>Needling:</strong> Insert the needle in-plane from anterior to posterior.',
+          '<strong>Injection:</strong> Advance the tip into the fascial plane superficial to the serratus anterior. Aspirate. Inject 20-30ml of local anaesthetic to hydrodissect the plane.'
         ],
-        tips: ['Keep needle tip in strict view to prevent pneumothorax.', 'You can inject deep to serratus anterior directly on the rib.', 'Use colour Doppler to avoid the thoracodorsal artery.'],
-        variations: ['Thoracodorsal artery may run superficial or deep to latissimus dorsi.'],
-        troubleshooting: ['Poor fluid spread: Ensure needle bevel is fully within fascial plane. Rotate 90 degrees.'],
+        tips: ['You can inject deep to the serratus anterior directly on the rib. Both approaches work.', 'Use colour Doppler to locate and avoid the thoracodorsal artery.'],
+        variations: ['The thoracodorsal artery may run superficial or deep to the latissimus dorsi.'],
+        troubleshooting: ['Poor fluid spread: Ensure the entire needle bevel is within the fascial plane. Rotate the needle 90 degrees.', 'Unable to see pleura: Decrease probe frequency or increase depth.'],
         highRiskStructures: ['Pleura (Pneumothorax)', 'Thoracodorsal Artery'],
         primaryZones: ['lateral-chest-left', 'lateral-chest-right'],
         secondaryZones: ['anterior-chest-left'],
@@ -241,22 +239,21 @@
         position: 'Sitting or Prone',
         equipment: 'High-frequency linear probe. 50mm or 80mm echogenic needle.',
         target: 'Dorsal and ventral rami of spinal nerves',
+        goldenRule: 'You must feel the needle hit the bone of the transverse process before injecting.',
         indications: ['Posterior rib fractures', 'Acute back pain', 'Vertebral fractures'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Severe coagulopathy', 'Prior spinal surgery'] },
         effects: ['Somatic and visceral analgesia over multiple dermatomes'],
         technique: [
-          'Position patient sitting or lateral.',
-          'Place probe sagittal, 3cm lateral to target spinous process.',
-          'Identify trapezius, rhomboid major, and erector spinae muscles.',
-          'Identify hyperechoic shadow of transverse process.',
-          'Insert needle in-plane, cranial to caudal.',
-          'Advance until tip contacts transverse process.',
-          'Aspirate and inject 20-30ml of LA deep to erector spinae fascia.'
+          '<strong>Setup:</strong> Position the patient sitting or prone.',
+          '<strong>Scanning:</strong> Place the probe in a sagittal orientation over the midline spinous processes. Slide 3cm laterally.',
+          '<strong>Identification:</strong> Identify the trapezius, rhomboid major, and erector spinae muscles lying above the flat transverse process shadow.',
+          '<strong>Needling:</strong> Insert the needle in-plane from cranial to caudal.',
+          '<strong>Injection:</strong> Advance until the needle contacts the transverse process. Aspirate. Inject 20-30ml of local anaesthetic deep to the erector spinae fascia to lift the muscle off the bone.'
         ],
-        tips: ['Ensure needle tip firmly touches bone before injecting.', 'Advance slightly to pierce fascia if you see muscle swelling.'],
-        variations: ['Transverse processes lie deeper in muscular patients.'],
-        troubleshooting: ['Hitting rib instead of transverse process: Slide probe slightly medial.'],
-        highRiskStructures: ['Pleura (Deep to intercostal space)', 'Neuraxis'],
+        tips: ['Advance slightly to pierce the fascia if you see muscle swelling instead of linear spread.', 'Count the ribs carefully to target the correct vertebral level.'],
+        variations: ['Transverse processes lie deeper in muscular or obese patients. You may need a curvilinear probe.'],
+        troubleshooting: ['Hitting rib instead of transverse process: Slide the probe slightly medial.'],
+        highRiskStructures: ['Pleura (Deep to intercostal space)', 'Neuraxis (If medial)'],
         primaryZones: ['posterior-back-left'],
         secondaryZones: ['lateral-chest-left'],
         probePosition: { text: 'Sagittal, 3cm lateral to spinous process.' },
@@ -270,22 +267,21 @@
         position: 'Supine, arm abducted 90 degrees',
         equipment: 'High-frequency linear probe. 50mm echogenic needle.',
         target: 'Median, ulnar, radial, and musculocutaneous nerves',
+        goldenRule: 'Aspirate before every 5ml injection. The axilla is highly vascular.',
         indications: ['Forearm fractures', 'Wrist injuries', 'Hand injuries'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Pre-existing nerve injury', 'Coagulopathy'] },
         effects: ['Complete motor and sensory block of arm below shoulder'],
         technique: [
-          'Abduct arm to 90 degrees and externally rotate.',
-          'Place probe transversely across axillary crease.',
-          'Identify pulsatile axillary artery.',
-          'Locate nerves: Median (superior), Ulnar (inferior), Radial (posterior).',
-          'Identify musculocutaneous nerve within coracobrachialis muscle.',
-          'Insert needle in-plane.',
-          'Inject 15-20ml total split around the nerves.'
+          '<strong>Setup:</strong> Abduct the arm to 90 degrees and externally rotate it.',
+          '<strong>Scanning:</strong> Place the probe transversely across the high axillary crease.',
+          '<strong>Identification:</strong> Find the pulsatile axillary artery. Locate the median (superior), ulnar (inferior), and radial (posterior) nerves. Find the musculocutaneous nerve separately within the coracobrachialis muscle.',
+          '<strong>Needling:</strong> Insert the needle in-plane. Target the musculocutaneous nerve first.',
+          '<strong>Injection:</strong> Aspirate frequently. Inject 15-20ml total split around the nerves.'
         ],
-        tips: ['Apply minimal probe pressure to avoid compressing veins.', 'Block musculocutaneous nerve first.', 'Aspirate frequently.'],
-        variations: ['Veins form a complex plexus around the artery.'],
-        troubleshooting: ['Cannot find radial nerve: Look posterior to artery, apply heel-toe tilt.'],
-        highRiskStructures: ['Axillary Artery', 'Axillary Veins'],
+        tips: ['Apply minimal probe pressure. Veins compress easily and hide from view.', 'The nerves often look like a honeycomb structure.'],
+        variations: ['Veins form a complex plexus around the artery. The musculocutaneous nerve may sit very proximal.'],
+        troubleshooting: ['Cannot find the radial nerve: Look posterior to the artery and apply a heel-toe tilt to correct anisotropy.'],
+        highRiskStructures: ['Axillary Artery', 'Axillary Veins (Intravascular injection)'],
         primaryZones: ['forearm-left', 'hand-left'],
         secondaryZones: ['upper-arm-lateral-left'],
         probePosition: { text: 'Transverse, high in the axillary crease.' },
@@ -299,22 +295,20 @@
         position: 'Supine',
         equipment: 'High-frequency linear probe. 80mm echogenic needle.',
         target: 'Femoral nerve and lateral femoral cutaneous nerve',
+        goldenRule: 'Volume is key. You need at least 30ml to push the anaesthetic high enough to work effectively.',
         indications: ['Neck of femur fractures', 'Femoral shaft fractures'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Previous femoral bypass grafting'] },
         effects: ['Blocks femoral nerve and lateral femoral cutaneous nerve'],
         technique: [
-          'Position patient supine.',
-          'Place probe transversely inferior to inguinal ligament.',
-          'Identify femoral artery and vein.',
-          'Move probe laterally to visualise iliopsoas muscle and fascia iliaca.',
-          'Insert needle in-plane from lateral to medial.',
-          'Pierce fascia iliaca.',
-          'Aspirate and inject 30-40ml of LA.',
-          'Watch fluid spread medially.'
+          '<strong>Setup:</strong> Position the patient supine.',
+          '<strong>Scanning:</strong> Place the probe transversely inferior to the inguinal ligament.',
+          '<strong>Identification:</strong> Find the femoral artery and vein. Slide laterally to visualise the iliopsoas muscle and the overlying fascia iliaca.',
+          '<strong>Needling:</strong> Insert the needle in-plane from lateral to medial.',
+          '<strong>Injection:</strong> Pierce the fascia iliaca. You may feel two distinct pops. Aspirate. Inject 30-40ml of local anaesthetic and watch the fluid spread medially.'
         ],
-        tips: ['Volume is critical. Use at least 30ml.', 'Ensure fluid spreads underneath fascia, not within muscle.'],
-        variations: ['Deep circumflex iliac artery may lie in needle path.'],
-        troubleshooting: ['Resistance to injection: Withdraw 1mm, you are intramuscular.'],
+        tips: ['Ensure the fluid spreads underneath the fascia, not within the muscle tissue.'],
+        variations: ['The deep circumflex iliac artery may lie directly in your needle path. Use colour Doppler.'],
+        troubleshooting: ['Resistance to injection: You are likely intramuscular. Withdraw 1mm and re-attempt.'],
         highRiskStructures: ['Femoral Artery', 'Deep Circumflex Iliac Artery'],
         primaryZones: ['anterior-thigh-left', 'lateral-thigh-left'],
         secondaryZones: ['medial-thigh-left'],
@@ -329,21 +323,20 @@
         position: 'Supine',
         equipment: 'High-frequency linear probe. 50mm or 80mm echogenic needle.',
         target: 'Femoral nerve',
+        goldenRule: 'Never inject if the patient feels sharp pain or if the injection requires high pressure. Stop immediately.',
         indications: ['Femur fractures', 'Patella fractures', 'Anterior thigh lacerations'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Vascular graft in groin'] },
         effects: ['Motor and sensory block to anterior thigh and knee'],
         technique: [
-          'Position patient supine.',
-          'Place probe transversely at femoral crease.',
-          'Identify femoral artery. Femoral nerve lies lateral to it.',
-          'Look for triangular shape of nerve beneath fascia iliaca.',
-          'Insert needle in-plane from lateral to medial.',
-          'Advance tip adjacent to nerve.',
-          'Aspirate and inject 15-20ml of LA.'
+          '<strong>Setup:</strong> Position the patient supine.',
+          '<strong>Scanning:</strong> Place the probe transversely at the femoral crease.',
+          '<strong>Identification:</strong> Find the femoral artery. The femoral nerve lies lateral to it, often looking like a hyperechoic triangle or bow-tie beneath the fascia iliaca.',
+          '<strong>Needling:</strong> Insert the needle in-plane from lateral to medial.',
+          '<strong>Injection:</strong> Advance the tip adjacent to the nerve. Aspirate. Inject 15-20ml of local anaesthetic to bathe the nerve.'
         ],
-        tips: ['Do not inject directly into the nerve.', 'Stop if patient reports high pressure or severe pain.'],
-        variations: ['Nerve may branch high up in groin.'],
-        troubleshooting: ['High injection pressure: Stop. You may be intraneural.'],
+        tips: ['Angle the probe slightly cranially or caudally to make the nerve stand out clearly.', 'Do not inject directly into the nerve.'],
+        variations: ['The nerve may branch very high up in the groin. Lymph nodes can mimic the appearance of nerves.'],
+        troubleshooting: ['High injection pressure: Stop. You may be intraneural. Withdraw slightly.'],
         highRiskStructures: ['Femoral Artery', 'Femoral Nerve (Intraneural)'],
         primaryZones: ['anterior-thigh-left', 'medial-calf-left'],
         secondaryZones: ['anterior-knee-left'],
@@ -358,22 +351,20 @@
         position: 'Prone or Lateral',
         equipment: 'High-frequency linear probe. 80mm echogenic needle.',
         target: 'Sciatic nerve (Tibial and common peroneal)',
+        goldenRule: 'Inject inside the paraneural sheath but strictly outside the nerve fascicles. Look for the donut sign.',
         indications: ['Ankle fractures', 'Foot injuries', 'Achilles tendon ruptures'],
         contraindications: { absolute: ['Patient refusal', 'Infection at site', 'LA allergy'], relative: ['Pre-existing peripheral neuropathy'] },
         effects: ['Analgesia to lower leg and foot, sparing medial aspect'],
         technique: [
-          'Position patient prone or lateral.',
-          'Place probe transversely at popliteal crease.',
-          'Identify popliteal artery and vein.',
-          'Look superficial and lateral to find sciatic nerve.',
-          'Trace nerve proximally until tibial and common peroneal nerves join.',
-          'Insert needle in-plane from lateral to medial.',
-          'Advance tip inside paraneural sheath but outside epineurium.',
-          'Aspirate and inject 15-20ml of LA. Look for donut sign.'
+          '<strong>Setup:</strong> Position the patient prone or lateral.',
+          '<strong>Scanning:</strong> Place the probe transversely at the popliteal crease. Find the popliteal artery.',
+          '<strong>Identification:</strong> Look superficial and lateral to find the sciatic nerve. Trace it proximally until the tibial and common peroneal branches join.',
+          '<strong>Needling:</strong> Insert the needle in-plane from lateral to medial.',
+          '<strong>Injection:</strong> Advance inside the paraneural sheath but outside the epineurium. Aspirate. Inject 15-20ml of local anaesthetic. Look for the donut sign.'
         ],
-        tips: ['Ask patient to plantar flex foot to spot the nerve easily.', 'Target nerve proximal to bifurcation.'],
-        variations: ['Bifurcation height varies massively.'],
-        troubleshooting: ['Nerve splitting: Do not inject between fascicles. Stay in common sheath.'],
+        tips: ['Ask the patient to plantar flex their foot. Muscle movement makes the static nerve easier to spot.'],
+        variations: ['The bifurcation height varies massively between patients.'],
+        troubleshooting: ['Nerve splitting: Do not inject between the distinct fascicles. Stay in the common sheath.', 'Deep nerve: Switch to a curvilinear probe if the patient is obese.'],
         highRiskStructures: ['Popliteal Artery', 'Popliteal Vein'],
         primaryZones: ['lateral-calf-left', 'posterior-calf-left', 'foot-left'],
         secondaryZones: [],
@@ -673,6 +664,16 @@
 
           <div class="mt-8 border-t border-slate-200 dark:border-slate-800 pt-6">
             <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="scan-line" class="w-5 h-5"></i> Ergonomics & Equipment</h3>
+            
+            <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6 shadow-sm">
+              <h4 class="font-bold text-amber-800 dark:text-amber-400 mb-2">Trainee Focus: Needle Visibility</h4>
+              <ul class="text-sm text-amber-900 dark:text-amber-200 space-y-1">
+                <li><strong>Alignment:</strong> Ensure the needle is directly under the long axis of the probe footprint.</li>
+                <li><strong>Tilt:</strong> Use the heel-toe manoeuvre to keep the ultrasound beam exactly perpendicular to the needle shaft.</li>
+                <li><strong>Hydrolocate:</strong> Inject 1ml of normal saline to locate the tip if lost.</li>
+              </ul>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg flex gap-4 items-center border border-slate-200 dark:border-slate-700">
                 <div class="w-16 h-16 shrink-0 text-blue-500">${getErgoSetupSVG()}</div>
@@ -952,9 +953,13 @@ NURSING INSTRUCTIONS:
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-6">
             <div class="space-y-6">
               <section>
-                <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2"><i data-lucide="syringe" class="w-5 h-5"></i> Technique</h3>
-                <ol class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                  ${b.technique.map((step, idx) => `<li class="flex gap-2"><span class="font-bold text-blue-600 dark:text-blue-400">${idx + 1}.</span> ${step}</li>`).join('')}
+                <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2"><i data-lucide="syringe" class="w-5 h-5"></i> Step-by-Step Technique</h3>
+                <div class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
+                  <h4 class="font-bold text-sm text-amber-800 dark:text-amber-400 flex items-center gap-1"><i data-lucide="star" class="w-4 h-4"></i> Golden Rule</h4>
+                  <p class="text-sm text-amber-900 dark:text-amber-200 mt-1">${b.goldenRule}</p>
+                </div>
+                <ol class="space-y-3 text-sm text-slate-700 dark:text-slate-300 ml-2">
+                  ${b.technique.map((step, idx) => `<li class="flex gap-3"><span class="font-black text-blue-600 dark:text-blue-400">${idx + 1}.</span> <span>${step}</span></li>`).join('')}
                 </ol>
               </section>
             </div>
