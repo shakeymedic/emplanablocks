@@ -16,41 +16,41 @@
     }
   </script>
   <style>
+    /* 4-Phase Clinical Animation Sequence: Scan (0-20%), Approach (20-45%), Aspirate/Pause (45-60%), Inject/Hydrodissect (60-100%) */
     @keyframes scanSweep {
-      0% { transform: translateX(40px); }
-      15% { transform: translateX(-20px); }
-      30% { transform: translateX(10px); }
-      40%, 100% { transform: translateX(0); }
+      0% { transform: translateX(30px); }
+      10% { transform: translateX(-15px); }
+      20%, 100% { transform: translateX(0); }
     }
     @keyframes needleAdvance { 
-      0%, 40% { transform: translate(150px, -150px); opacity: 0; } 
-      55% { opacity: 1; } 
-      70%, 100% { transform: translate(0, 0); opacity: 1; } 
+      0%, 20% { transform: translate(180px, -180px); opacity: 0; } 
+      25% { opacity: 1; } 
+      45%, 100% { transform: translate(0, 0); opacity: 1; } 
     }
     @keyframes needleAdvanceLeft { 
-      0%, 40% { transform: translate(-150px, -150px); opacity: 0; } 
-      55% { opacity: 1; } 
-      70%, 100% { transform: translate(0, 0); opacity: 1; } 
+      0%, 20% { transform: translate(-180px, -180px); opacity: 0; } 
+      25% { opacity: 1; } 
+      45%, 100% { transform: translate(0, 0); opacity: 1; } 
     }
     @keyframes fluidExpand { 
-      0%, 70% { transform: scale(0); opacity: 0; } 
-      80% { transform: scale(0.5); opacity: 0.6; } 
+      0%, 60% { transform: scale(0); opacity: 0; } 
+      75% { transform: scale(0.6); opacity: 0.8; } 
       100% { transform: scale(1); opacity: 1; } 
     }
     @keyframes liftFascia { 
-      0%, 70% { transform: translateY(0); } 
-      100% { transform: translateY(-25px); } 
+      0%, 60% { transform: translateY(0); } 
+      100% { transform: translateY(-20px); } 
     }
     @keyframes pulseArtery { 
       0%, 100% { transform: scale(1); } 
-      50% { transform: scale(1.04); } 
+      50% { transform: scale(1.05); } 
     }
 
-    .animate-scan { animation: scanSweep 7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .animate-needle { animation: needleAdvance 7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .animate-needle-left { animation: needleAdvanceLeft 7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .animate-fluid { animation: fluidExpand 7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .animate-fascia { animation: liftFascia 7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-scan { animation: scanSweep 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-needle { animation: needleAdvance 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-needle-left { animation: needleAdvanceLeft 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-fluid { animation: fluidExpand 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-fascia { animation: liftFascia 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     .animate-pulse-artery { animation: pulseArtery 1s infinite ease-in-out; transform-origin: center; transform-box: fill-box; }
     
     ::-webkit-scrollbar { width: 8px; }
@@ -120,6 +120,9 @@
           <div class="p-6 border-b border-slate-100 bg-slate-50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4" id="blockHeaderArea">
             <div>
               <h2 class="text-2xl font-extrabold text-slate-900" id="blockTitle">Block Name</h2>
+              <div class="flex gap-4 mt-2" id="blockLinks">
+                <!-- Links injected via JS -->
+              </div>
             </div>
             
             <div class="flex bg-slate-200 rounded p-1 w-full lg:w-auto overflow-x-auto" id="tabContainer">
@@ -205,6 +208,7 @@
       {
         id: 'sap',
         name: 'Serratus Anterior Plane (SAP) Block',
+        nysoraLink: 'https://www.nysora.com/techniques/trunk/serratus-anterior-plane-block/',
         position: 'Lateral or Supine',
         equipment: 'High-frequency linear probe. 50mm echogenic needle.',
         target: 'Intercostal nerves (Lateral cutaneous branches T2-T9)',
@@ -233,7 +237,8 @@
       {
         id: 'esp',
         name: 'Erector Spinae Plane (ESP) Block',
-        position: 'Sitting or Lateral',
+        nysoraLink: 'https://www.nysora.com/techniques/trunk/erector-spinae-plane-block/',
+        position: 'Sitting or Prone',
         equipment: 'High-frequency linear probe. 50mm or 80mm echogenic needle.',
         target: 'Dorsal and ventral rami of spinal nerves',
         indications: ['Posterior rib fractures', 'Acute back pain', 'Vertebral fractures'],
@@ -261,6 +266,7 @@
       {
         id: 'axillary',
         name: 'Axillary Nerve Block',
+        nysoraLink: 'https://www.nysora.com/techniques/upper-extremity/axillary-brachial-plexus-block/',
         position: 'Supine, arm abducted 90 degrees',
         equipment: 'High-frequency linear probe. 50mm echogenic needle.',
         target: 'Median, ulnar, radial, and musculocutaneous nerves',
@@ -289,6 +295,7 @@
       {
         id: 'fib',
         name: 'Fascia Iliaca Block (FIB)',
+        nysoraLink: 'https://www.nysora.com/techniques/lower-extremity/fascia-iliaca-block/',
         position: 'Supine',
         equipment: 'High-frequency linear probe. 80mm echogenic needle.',
         target: 'Femoral nerve and lateral femoral cutaneous nerve',
@@ -318,6 +325,7 @@
       {
         id: 'femoral',
         name: 'Femoral Nerve Block',
+        nysoraLink: 'https://www.nysora.com/techniques/lower-extremity/femoral-nerve-block/',
         position: 'Supine',
         equipment: 'High-frequency linear probe. 50mm or 80mm echogenic needle.',
         target: 'Femoral nerve',
@@ -346,6 +354,7 @@
       {
         id: 'popliteal',
         name: 'Popliteal Block',
+        nysoraLink: 'https://www.nysora.com/techniques/lower-extremity/popliteal-sciatic-nerve-block/',
         position: 'Prone or Lateral',
         equipment: 'High-frequency linear probe. 80mm echogenic needle.',
         target: 'Sciatic nerve (Tibial and common peroneal)',
@@ -603,6 +612,10 @@
 
     function renderContent() {
       document.getElementById('blockTitle').innerText = state.selectedBlock.name;
+      document.getElementById('blockLinks').innerHTML = `
+        <a href="${state.selectedBlock.nysoraLink}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-600 hover:underline">NYSORA Guide ↗</a>
+        <a href="https://rcem.ac.uk/" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-600 hover:underline">RCEM Guidelines ↗</a>
+      `;
       const contentDiv = document.getElementById('tabContent');
       
       if (state.activeTab === 'clinical') {
@@ -975,54 +988,79 @@ NURSING INSTRUCTIONS:
     }
 
     function getMacroscopicSVG(blockId) {
-      const baseSvg = '<svg viewBox="0 0 400 300" class="w-full h-full drop-shadow-md text-slate-400 dark:text-slate-500">';
-      const probe = (x, y, rot, text, textX, textY, textRot = 0) => `
+      const baseSvg = '<svg viewBox="0 0 400 300" class="w-full h-full drop-shadow-md text-slate-500 dark:text-slate-400">';
+      
+      const renderProbe = (x, y, rot, text, textX, textY, textRot = 0) => `
         <g transform="translate(${x}, ${y}) rotate(${rot})">
-          <rect x="-25" y="-6" width="50" height="12" rx="4" fill="#3b82f6" />
-          <circle cx="-15" cy="0" r="4" fill="#10b981" />
-          <text x="${textX}" y="${textY}" transform="rotate(${textRot})" fill="#3b82f6" font-size="14" font-weight="bold">${text}</text>
+          <path d="M -15,-30 L 15,-30 L 20,0 L -20,0 Z" fill="#1e3a8a" />
+          <rect x="-20" y="0" width="40" height="6" rx="2" fill="#3b82f6" />
+          <path d="M 0,-30 C 0,-50 -20,-60 -20,-80" fill="none" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="-15" cy="-10" r="4" fill="#10b981" />
+          <text x="${textX}" y="${textY}" transform="rotate(${textRot})" fill="#2563eb" font-size="14" font-weight="bold">${text}</text>
         </g>
       `;
 
       switch(blockId) {
         case 'sap': return baseSvg + `
-          <path d="M 150 50 Q 180 50 180 100 L 180 250 L 80 250 L 80 100 Q 80 50 150 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-          <path d="M 130 80 L 280 20 L 290 40 L 150 120" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-          <line x1="110" y1="130" x2="170" y2="130" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="110" y1="150" x2="170" y2="150" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="110" y1="170" x2="170" y2="170" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="110" y1="190" x2="170" y2="190" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          ${probe(140, 160, -15, "Marker Anterior", 35, 4)}
+          <!-- Lateral Torso, arm raised -->
+          <path d="M 160 50 C 180 50, 190 70, 190 100 C 190 150, 200 200, 200 250 L 100 250 C 100 200, 90 150, 90 100 C 90 70, 100 50, 160 50" fill="#e2e8f0" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Arm -->
+          <path d="M 140 80 L 250 20 L 270 40 L 170 110" fill="#cbd5e1" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Rib Lines -->
+          <path d="M 120 130 Q 145 140 180 130 M 120 150 Q 145 160 180 150 M 120 170 Q 145 180 180 170 M 120 190 Q 145 200 180 190" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+          <!-- Mid Axillary Line -->
+          <line x1="145" y1="100" x2="145" y2="230" stroke="currentColor" stroke-width="2" stroke-dasharray="6" opacity="0.5"/>
+          ${renderProbe(145, 170, -15, "Marker Anterior", 30, 0)}
         </svg>`;
+        
         case 'esp': return baseSvg + `
-          <path d="M 150 40 Q 200 20 250 40 L 280 250 L 120 250 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-          <line x1="200" y1="50" x2="200" y2="240" stroke="currentColor" stroke-width="4" stroke-dasharray="8"/>
-          <path d="M 130 80 L 170 80 L 160 150 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <path d="M 270 80 L 230 80 L 240 150 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          ${probe(165, 150, 90, "Marker Cephalad", 35, -15, -90)}
+          <!-- Prone/Sitting Back -->
+          <path d="M 150 40 C 200 20, 250 40, 250 40 C 280 100, 270 180, 280 250 L 120 250 C 130 180, 120 100, 150 40 Z" fill="#e2e8f0" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Spine Line -->
+          <line x1="200" y1="50" x2="200" y2="240" stroke="currentColor" stroke-width="3" stroke-dasharray="6"/>
+          <!-- Scapulae outlines -->
+          <path d="M 140 80 C 160 80, 170 120, 150 150 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+          <path d="M 260 80 C 240 80, 230 120, 250 150 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+          ${renderProbe(165, 150, 90, "Marker Cephalad", -60, -25, -90)}
         </svg>`;
+        
         case 'axillary': return baseSvg + `
-          <path d="M 80 50 L 80 280" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-          <path d="M 80 120 L 350 120" fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round"/>
-          <path d="M 80 170 Q 110 140 130 110" fill="none" stroke="currentColor" stroke-width="4"/>
-          <path d="M 130 108 Q 200 90 250 108" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          ${probe(140, 120, 90, "Marker Cephalad", -40, -15, -90)}
+          <!-- Torso edge -->
+          <path d="M 80 50 C 80 100, 70 200, 80 280" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Arm Abducted -->
+          <path d="M 80 100 C 120 100, 200 90, 350 110 L 350 140 C 200 130, 120 150, 80 160" fill="#e2e8f0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Pectoral/Axillary lines -->
+          <path d="M 80 160 C 110 140, 130 120, 150 110" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M 140 110 C 200 100, 250 115, 250 115" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+          ${renderProbe(150, 125, 90, "Marker Cephalad", -60, -25, -90)}
         </svg>`;
+        
         case 'fib':
         case 'femoral': return baseSvg + `
-          <path d="M 100 50 L 300 50 L 320 150 L 250 300 M 100 50 L 80 150 L 150 300" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-          <path d="M 200 130 L 200 180" fill="none" stroke="currentColor" stroke-width="4" opacity="0.4"/>
-          <line x1="200" y1="140" x2="300" y2="100" stroke="currentColor" stroke-width="3" stroke-dasharray="4"/>
-          <path d="M 200 160 Q 250 140 310 150" fill="none" stroke="currentColor" stroke-width="3"/>
-          ${probe(blockId === 'femoral' ? 240 : 270, 160, -15, "Marker Right", -45, -15)}
+          <!-- Supine Groin -->
+          <path d="M 100 50 L 300 50 C 310 100, 320 150, 250 300 L 150 300 C 80 150, 90 100, 100 50 Z" fill="#e2e8f0" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Navel -->
+          <circle cx="200" cy="80" r="4" fill="currentColor" opacity="0.5"/>
+          <!-- Groin Crease -->
+          <path d="M 200 130 C 200 150, 200 170, 200 190" fill="none" stroke="currentColor" stroke-width="3" opacity="0.4"/>
+          <!-- Inguinal Ligament -->
+          <line x1="200" y1="140" x2="300" y2="100" stroke="currentColor" stroke-width="2" stroke-dasharray="4"/>
+          <!-- Femoral Crease Line -->
+          <path d="M 200 160 C 240 150, 280 160, 300 165" fill="none" stroke="currentColor" stroke-width="2"/>
+          ${renderProbe(blockId === 'femoral' ? 240 : 275, 160, -15, "Marker Right", -60, -25)}
         </svg>`;
+        
         case 'popliteal': return baseSvg + `
-          <path d="M 150 20 L 150 280 M 250 20 L 250 280" fill="none" stroke="currentColor" stroke-width="8"/>
-          <path d="M 160 150 Q 200 160 240 150" fill="none" stroke="currentColor" stroke-width="4"/>
-          <path d="M 150 180 Q 180 220 150 280" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <path d="M 250 180 Q 220 220 250 280" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          ${probe(200, 90, 0, "Marker Lateral", 35, 4)}
+          <!-- Prone Lower Thigh / Knee -->
+          <path d="M 150 20 C 150 100, 160 200, 150 280 L 250 280 C 240 200, 250 100, 250 20 Z" fill="#e2e8f0" stroke="currentColor" stroke-width="4"/>
+          <!-- Popliteal Crease -->
+          <path d="M 160 150 C 200 165, 240 150, 240 150" fill="none" stroke="currentColor" stroke-width="3"/>
+          <!-- Muscle outlines -->
+          <path d="M 150 180 C 180 220, 150 280, 150 280" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+          <path d="M 250 180 C 220 220, 250 280, 250 280" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+          ${renderProbe(200, 90, 0, "Marker Lateral", 30, 0)}
         </svg>`;
+        
         default: return '';
       }
     }
@@ -1046,6 +1084,12 @@ NURSING INSTRUCTIONS:
         const usOverlay = isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : '';
         const realOverlay = isRealUS ? '<rect width="600" height="400" fill="url(#realNoise)" opacity="0.8" style="mix-blend-mode: screen" />' : '';
 
+        // Needle drawing function to include a bevel tip
+        const needleDraw = (x1, y1, x2, y2) => `
+          <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+          <polygon points="${x2},${y2} ${x2+(x1>x2?10:-10)},${y2-5} ${x2+(x1>x2?5:-5)},${y2+5}" fill="#fff" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+        `;
+
         switch(blockId) {
           case 'sap': return `
             <g class="${c}">
@@ -1060,11 +1104,11 @@ NURSING INSTRUCTIONS:
                 <line x1="0" y1="340" x2="600" y2="340" stroke="#fff" stroke-width="${isUS||isRealUS?6:4}" class="${isUS||isRealUS?'drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]':''}" />
                 <text x="30" y="365" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Pleura</text>
                 <line x1="0" y1="140" x2="600" y2="140" stroke="#fff" stroke-width="2" stroke-dasharray="8" opacity="${isUS||isRealUS?0.3:1}" />
-                <ellipse cx="300" cy="140" rx="140" ry="25" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+                <ellipse cx="300" cy="140" rx="140" ry="25" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleClass}">
-                <line x1="550" y1="20" x2="310" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(550, 20, 310, 135)}
               </g>
             </g>`;
           
@@ -1077,11 +1121,11 @@ NURSING INSTRUCTIONS:
                 <text x="30" y="160" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Erector Spinae</text>
                 <path d="M 180 280 Q 280 230 380 280 L 380 400 L 180 400 Z" fill="${isUS||isRealUS?'#ddd':'#e2e8f0'}" />
                 <text x="210" y="320" fill="${isUS||isRealUS?'#333':'#1e293b'}" font-size="16" font-weight="bold" opacity="${lo}">Transverse Process</text>
-                <ellipse cx="280" cy="265" rx="100" ry="30" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+                <ellipse cx="280" cy="265" rx="100" ry="30" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleClass}">
-                <line x1="80" y1="20" x2="270" y2="250" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(80, 20, 270, 250)}
               </g>
             </g>`;
 
@@ -1102,11 +1146,11 @@ NURSING INSTRUCTIONS:
                 <text x="190" y="280" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Ulnar</text>
                 <circle cx="400" cy="210" r="12" fill="${isUS||isRealUS?'#bbb':'#fde047'}" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
                 <text x="420" y="215" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Radial</text>
-                <path d="M 220 120 Q 320 80 360 210 Q 300 300 220 240 Z" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.7" />
+                <path d="M 220 120 Q 320 80 360 210 Q 300 300 220 240 Z" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.7" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleLeftClass}">
-                <line x1="20" y1="20" x2="230" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(20, 20, 230, 135)}
               </g>
             </g>`;
 
@@ -1120,11 +1164,11 @@ NURSING INSTRUCTIONS:
                 <ellipse cx="430" cy="235" rx="25" ry="12" fill="${isUS||isRealUS?'#888':'#fde047'}" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
                 <text x="385" y="275" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Femoral N.</text>
                 <circle cx="540" cy="200" r="30" fill="${isUS||isRealUS?'#000':'#ef4444'}" class="animate-pulse-artery" />
-                <path d="M 140 210 Q 300 300 450 230 L 430 195 Q 300 240 140 180 Z" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+                <path d="M 140 210 Q 300 300 450 230 L 430 195 Q 300 240 140 180 Z" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleLeftClass}">
-                <line x1="30" y1="30" x2="220" y2="225" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(30, 30, 220, 225)}
               </g>
             </g>`;
             
@@ -1140,11 +1184,11 @@ NURSING INSTRUCTIONS:
                 <text x="395" y="185" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">FA</text>
                 <path d="M 480 150 Q 530 140 540 190 Q 490 200 480 150 Z" fill="${isUS||isRealUS?'#111':'#3b82f6'}" opacity="0.8" />
                 <text x="500" y="175" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">FV</text>
-                <ellipse cx="280" cy="210" rx="60" ry="35" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.8" />
+                <ellipse cx="280" cy="210" rx="60" ry="35" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.8" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleLeftClass}">
-                <line x1="30" y1="40" x2="235" y2="195" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(30, 40, 235, 195)}
               </g>
             </g>`;
             
@@ -1160,11 +1204,11 @@ NURSING INSTRUCTIONS:
                 <circle cx="410" cy="160" r="14" fill="${isUS||isRealUS?'#bbb':'#fde047'}" />
                 <ellipse cx="385" cy="150" rx="60" ry="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6" />
                 <text x="300" y="90" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Sciatic Nerve Complex</text>
-                <path d="M 325 150 A 60 40 0 1 0 445 150 A 60 40 0 1 0 325 150 M 340 150 A 25 15 0 1 1 400 150 A 25 15 0 1 1 340 150" fill="${isUS||isRealUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" fill-rule="evenodd" opacity="0.8" />
+                <path d="M 325 150 A 60 40 0 1 0 445 150 A 60 40 0 1 0 325 150 M 340 150 A 25 15 0 1 1 400 150 A 25 15 0 1 1 340 150" fill="${isUS||isRealUS?'#111':'url(#fluidGradient)'}" class="${fluidClass}" style="transform-box: fill-box" fill-rule="evenodd" opacity="0.8" />
               </g>
               ${usOverlay} ${realOverlay}
               <g class="${needleClass}">
-                <line x1="580" y1="30" x2="445" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS||isRealUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+                ${needleDraw(580, 30, 445, 135)}
               </g>
             </g>`;
         }
@@ -1183,6 +1227,11 @@ NURSING INSTRUCTIONS:
               <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="4" stitchTiles="stitch" />
               <feColorMatrix type="matrix" values="0.3 0 0 0 0, 0.3 0 0 0 0, 0.3 0 0 0 0, 0 0 0 1 0" />
             </filter>
+            <radialGradient id="fluidGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#0891b2" stop-opacity="0.95" />
+              <stop offset="70%" stop-color="#06b6d4" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.2" />
+            </radialGradient>
             <clipPath id="sliderClip">
               <rect id="sliderRect" x="0" y="0" width="${clipWidth}" height="400" />
             </clipPath>
