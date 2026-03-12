@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regional Anaesthesia Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <style>
+    @keyframes needleAdvance { 
+      0% { transform: translate(200px, -200px); opacity: 0; } 
+      15% { opacity: 1; } 
+      40% { transform: translate(0, 0); opacity: 1; } 
+      100% { transform: translate(0, 0); opacity: 1; } 
+    }
+    @keyframes needleAdvanceLeft { 
+      0% { transform: translate(-200px, -200px); opacity: 0; } 
+      15% { opacity: 1; } 
+      40% { transform: translate(0, 0); opacity: 1; } 
+      100% { transform: translate(0, 0); opacity: 1; } 
+    }
+    @keyframes fluidExpand { 
+      0% { transform: scale(0); opacity: 0; } 
+      40% { transform: scale(0); opacity: 0; } 
+      55% { transform: scale(0.5); opacity: 0.6; } 
+      100% { transform: scale(1); opacity: 1; } 
+    }
+    @keyframes liftFascia { 
+      0% { transform: translateY(0); } 
+      40% { transform: translateY(0); } 
+      100% { transform: translateY(-25px); } 
+    }
+    @keyframes pulseArtery { 
+      0% { transform: scale(1); } 
+      50% { transform: scale(1.04); } 
+      100% { transform: scale(1); } 
+    }
+
+    .animate-needle { animation: needleAdvance 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .animate-needle-left { animation: needleAdvanceLeft 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .animate-fluid { animation: fluidExpand 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .animate-fascia { animation: liftFascia 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .animate-pulse-artery { animation: pulseArtery 1s infinite ease-in-out; transform-origin: center; transform-box: fill-box; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+    .body-zone {
+      fill: transparent;
+      cursor: pointer;
+      transition: fill 0.2s;
+    }
+    .body-zone:hover {
+      fill: rgba(59, 130, 246, 0.4);
+    }
+    .body-zone.active {
+      fill: rgba(59, 130, 246, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 transition-colors duration-200 text-slate-800 font-sans pb-12" id="bodyRoot">
+
+  <div class="bg-amber-500 text-amber-950 px-4 py-2 text-xs md:text-sm font-bold flex flex-wrap justify-center gap-4 sticky top-0 z-50 shadow-md">
+    <span class="flex items-center gap-1"><i data-lucide="shield-alert" class="w-4 h-4"></i> MAX SAFE DOSES:</span>
+    <span>L-Bupivacaine/Bupivacaine 2mg/kg</span>
+    <span>Lidocaine 3mg/kg (7mg/kg with Adrenaline)</span>
+    <span>Prilocaine 6mg/kg</span>
+  </div>
+
+  <header class="bg-blue-900 text-white p-4 md:p-6 shadow-md border-b-4 border-blue-500" id="mainHeader">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <i data-lucide="activity" class="text-cyan-400 w-8 h-8"></i>
+        <div>
+          <h1 class="text-2xl font-extrabold tracking-tight">Regional Anaesthesia Guide</h1>
+          <p class="text-blue-200 text-xs mt-1" id="headerSubtext">UK Emergency Medicine Guidelines</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="relative flex-1 md:w-64">
+          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Search blocks or indications..." 
+            oninput="handleSearch()"
+            class="w-full pl-9 pr-4 py-2 rounded-full bg-blue-800 border-none text-white placeholder-blue-300 focus:ring-2 focus:ring-cyan-400 text-sm outline-none"
+          />
+        </div>
+        <button 
+          onclick="toggleDarkMode()" 
+          class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition-colors focus:outline-none"
+          title="Toggle Dark Mode"
+          id="darkModeBtn"
+        >
+          <i data-lucide="moon" class="text-slate-200 w-5 h-5" id="darkModeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div class="lg:col-span-1 flex flex-col gap-6">
+      
+      <!-- Interactive Body Map Selector -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+        <h2 class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-xs text-center mb-4">Click Region to Select</h2>
+        <div class="flex justify-center gap-4" id="sidebarBodyMap">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <div class="space-y-2" id="sidebarNav">
+        <!-- Buttons injected here by JS -->
+      </div>
+    </div>
+
+    <div class="lg:col-span-3">
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col" id="mainCard">
+        
+        <div class="p-6 border-b border-slate-100 bg-slate-50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4" id="blockHeaderArea">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900" id="blockTitle">Block Name</h2>
+            <div class="flex gap-4 mt-2">
+              <a href="#" class="text-xs font-bold text-blue-600 hover:underline">RCEM Guidelines ↗</a>
+              <a href="#" class="text-xs font-bold text-blue-600 hover:underline">RA-UK Standards ↗</a>
+            </div>
+          </div>
+          
+          <div class="flex bg-slate-200 rounded p-1 w-full lg:w-auto overflow-x-auto" id="tabContainer">
+            <button onclick="switchTab('clinical')" id="tabClinical" class="whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all bg-white text-blue-700 shadow focus:outline-none">
+              Clinical & EPR
+            </button>
+            <button onclick="switchTab('visual')" id="tabVisual" class="whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all text-slate-600 hover:text-slate-900 focus:outline-none">
+              Visual Guide
+            </button>
+            <button onclick="switchTab('safety')" id="tabSafety" class="whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all text-slate-600 hover:text-slate-900 focus:outline-none">
+              Safety & LAST
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-6" id="tabContent">
+          <!-- Content injected here by JS -->
+        </div>
+        
+        <div class="bg-slate-100 p-4 border-t border-slate-200 flex justify-end" id="cardFooter">
+          <button class="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors focus:outline-none">
+            <i data-lucide="printer" class="w-4 h-4"></i> Print Summary Card
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const blocksData = [
+      {
+        id: 'sap',
+        name: 'Serratus Anterior Plane (SAP) Block',
+        position: 'Lateral or Supine',
+        indications: [
+          'Lateral rib fractures',
+          'Anterior rib fractures',
+          'Thoracostomy tube placement'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Active infection at injection site', 'Allergy to local anaesthetic'],
+          relative: ['Coagulopathy', 'Distorted anatomy']
+        },
+        effects: [
+          'Blocks lateral cutaneous branches of intercostal nerves (T2-T9)',
+          'Provides analgesia to the lateral chest wall'
+        ],
+        technique: [
+          'Position the patient supine or lateral.',
+          'Place a high-frequency linear probe transversely at the mid-axillary line over the 5th rib.',
+          'Identify the latissimus dorsi and serratus anterior muscles over the ribs.',
+          'Identify the bright pleural line between the ribs.',
+          'Insert the needle in-plane from anterior to posterior.',
+          'Advance the needle tip into the fascial plane superficial to the serratus anterior.',
+          'Aspirate to confirm no vascular puncture.',
+          'Inject 20-30ml of local anaesthetic to hydrodissect the plane.'
+        ],
+        tips: [
+          'Keep the needle tip in strict view to prevent pneumothorax.',
+          'You can inject deep to the serratus anterior directly on the rib.',
+          'Both superficial and deep approaches are effective.',
+          'Use colour Doppler to locate and avoid the thoracodorsal artery.'
+        ],
+        variations: [
+          'The thoracodorsal artery may run superficial or deep to the latissimus dorsi.',
+          'Serratus anterior muscle thickness varies significantly between patients.'
+        ],
+        troubleshooting: [
+          'Poor fluid spread: Ensure the needle bevel is completely within the fascial plane. Rotate the needle 90 degrees.',
+          'Unable to see pleura: Decrease probe frequency or adjust depth.'
+        ],
+        highRiskStructures: ['Pleura (Pneumothorax risk)', 'Thoracodorsal Artery'],
+        primaryZones: ['lateral-chest-left', 'lateral-chest-right'],
+        secondaryZones: ['anterior-chest-left'],
+        probePosition: { region: 'axilla', text: 'Transverse, mid-axillary line, 5th rib.' },
+        needleAngle: 'Shallow (10-20 degrees)',
+        doses: '20-30ml of 0.25% Levobupivacaine'
+      },
+      {
+        id: 'esp',
+        name: 'Erector Spinae Plane (ESP) Block',
+        position: 'Sitting or Lateral',
+        indications: [
+          'Posterior rib fractures',
+          'Acute back pain',
+          'Vertebral fractures',
+          'Herpes zoster pain'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Infection at injection site', 'Local anaesthetic allergy'],
+          relative: ['Severe coagulopathy', 'Prior spinal surgery at the target level']
+        },
+        effects: [
+          'Blocks dorsal and ventral rami of spinal nerves',
+          'Provides somatic and visceral analgesia over multiple dermatomes'
+        ],
+        technique: [
+          'Position the patient sitting or lateral.',
+          'Place a linear probe in a sagittal orientation 3cm lateral to the spinous process.',
+          'Identify the trapezius, rhomboid major, and erector spinae muscles.',
+          'Identify the hyperechoic shadow of the transverse process.',
+          'Insert the needle in-plane from cranial to caudal.',
+          'Advance until the needle physically contacts the transverse process.',
+          'Aspirate.',
+          'Inject 20-30ml of local anaesthetic deep to the erector spinae fascia.',
+          'Watch the fluid lift the muscle off the bone.'
+        ],
+        tips: [
+          'Ensure the needle tip firmly touches the bone before you inject.',
+          'Advance the needle deeper to pierce the fascia if you see muscle swelling.',
+          'Count the ribs or spinous processes to target the correct level.'
+        ],
+        variations: [
+          'Rhomboid major tapers off at lower thoracic levels.',
+          'Transverse processes lie deeper in muscular or obese patients.'
+        ],
+        troubleshooting: [
+          'Intramuscular injection: Advance the needle 1-2mm to contact bone, then inject.',
+          'Hitting rib instead of transverse process: Slide the probe slightly medial.'
+        ],
+        highRiskStructures: ['Pleura (Deep to intercostal space)', 'Neuraxis (If medial)'],
+        primaryZones: ['posterior-back-left'],
+        secondaryZones: ['lateral-chest-left'],
+        probePosition: { region: 'spine', text: 'Sagittal, 3cm lateral to spinous process.' },
+        needleAngle: 'Steep (30-45 degrees)',
+        doses: '20-30ml of 0.25% Levobupivacaine'
+      },
+      {
+        id: 'axillary',
+        name: 'Axillary Nerve Block',
+        position: 'Supine, arm abducted 90 degrees',
+        indications: [
+          'Forearm fractures',
+          'Wrist injuries',
+          'Hand injuries',
+          'Complex laceration repairs'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Infection at injection site', 'Local anaesthetic allergy'],
+          relative: ['Pre-existing nerve injury', 'Coagulopathy']
+        },
+        effects: [
+          'Anaesthetises the median, ulnar, radial, and musculocutaneous nerves',
+          'Provides complete motor and sensory block of the arm below the shoulder'
+        ],
+        technique: [
+          'Abduct the arm to 90 degrees and externally rotate it.',
+          'Place a linear probe transversely across the axillary crease.',
+          'Identify the pulsatile axillary artery.',
+          'Locate the nerves around the artery. Median is superior. Ulnar is inferior. Radial is posterior.',
+          'Identify the musculocutaneous nerve within the coracobrachialis muscle.',
+          'Insert the needle in-plane.',
+          'Target each nerve individually or inject into the perivascular space.',
+          'Inject 15-20ml total split around the nerves.'
+        ],
+        tips: [
+          'Apply minimal probe pressure to avoid compressing the axillary veins.',
+          'Block the musculocutaneous nerve first as it sits separate from the main cluster.',
+          'Aspirate frequently. Intravascular injection risk is high here.'
+        ],
+        variations: [
+          'Veins often surround the artery in a complex plexus.',
+          'The musculocutaneous nerve may join the median nerve or sit very proximal.'
+        ],
+        troubleshooting: [
+          'Cannot find radial nerve: Look posterior to the artery. Apply heel-toe probe movement to reduce anisotropy.',
+          'Veins in the way: Relieve probe pressure. Use an out-of-plane approach if necessary.'
+        ],
+        highRiskStructures: ['Axillary Artery', 'Axillary Veins (Intravascular injection)'],
+        primaryZones: ['forearm-left', 'hand-left'],
+        secondaryZones: ['upper-arm-lateral-left'],
+        probePosition: { region: 'axilla', text: 'Transverse, high in the axillary crease.' },
+        needleAngle: 'Shallow (10-20 degrees)',
+        doses: '15-20ml total of 0.25% Levobupivacaine'
+      },
+      {
+        id: 'fib',
+        name: 'Fascia Iliaca Block (FIB)',
+        position: 'Supine',
+        indications: [
+          'Neck of femur fractures',
+          'Femoral shaft fractures'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Infection at injection site', 'Local anaesthetic allergy'],
+          relative: ['Previous femoral bypass grafting', 'Anticoagulation']
+        },
+        effects: [
+          'Blocks the femoral nerve and lateral femoral cutaneous nerve',
+          'Often blocks the obturator nerve if volume spreads proximally'
+        ],
+        technique: [
+          'Position the patient supine.',
+          'Place a linear probe transversely inferior to the inguinal ligament.',
+          'Identify the femoral artery and vein.',
+          'Move the probe laterally to visualise the iliopsoas muscle and fascia iliaca.',
+          'Insert the needle in-plane from lateral to medial.',
+          'Pierce the fascia iliaca. You may feel a clear pop.',
+          'Aspirate.',
+          'Inject 30-40ml of local anaesthetic.',
+          'Watch the fluid separate the fascia from the iliopsoas muscle and spread medially.'
+        ],
+        tips: [
+          'Volume is critical. Use at least 30ml to ensure upward spread.',
+          'A distinct pop indicates correct fascial penetration.',
+          'Ensure the fluid spreads underneath the fascia and not within the muscle.'
+        ],
+        variations: [
+          'Fascia iliaca may have multiple layers. Ensure injection is deep to the main fascia.',
+          'The deep circumflex iliac artery may lie in the needle path.'
+        ],
+        troubleshooting: [
+          'Resistance to injection: You are likely intramuscular. Withdraw 1mm and re-attempt.',
+          'Fluid spreads superficial to fascia: Advance the needle to puncture the fascia.'
+        ],
+        highRiskStructures: ['Femoral Artery', 'Deep Circumflex Iliac Artery'],
+        primaryZones: ['anterior-thigh-left', 'lateral-thigh-left'],
+        secondaryZones: ['medial-thigh-left'],
+        probePosition: { region: 'groin', text: 'Transverse, lateral to femoral vessels, below inguinal ligament.' },
+        needleAngle: 'Moderate (20-30 degrees)',
+        doses: '30-40ml of 0.25% Levobupivacaine'
+      },
+      {
+        id: 'femoral',
+        name: 'Femoral Nerve Block',
+        position: 'Supine',
+        indications: [
+          'Femur fractures',
+          'Patella fractures',
+          'Knee injuries',
+          'Complex anterior thigh lacerations'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Infection at injection site', 'Local anaesthetic allergy'],
+          relative: ['Vascular graft in groin', 'Severe coagulopathy']
+        },
+        effects: [
+          'Blocks motor and sensory supply to the anterior thigh, femur, and knee',
+          'Blocks the saphenous nerve for medial lower leg sensory coverage'
+        ],
+        technique: [
+          'Position the patient supine.',
+          'Place a linear probe transversely at the femoral crease.',
+          'Identify the femoral artery. The femoral nerve lies lateral to it.',
+          'Look for the triangular or bow-tie shape of the nerve beneath the fascia iliaca.',
+          'Insert the needle in-plane from lateral to medial.',
+          'Advance the tip adjacent to the nerve.',
+          'Aspirate.',
+          'Inject 15-20ml of local anaesthetic to bathe the nerve.'
+        ],
+        tips: [
+          'Angle the probe slightly cranially or caudally to make the nerve stand out clearly.',
+          'Do not inject directly into the nerve.',
+          'Stop if the patient reports high pressure or severe pain.',
+          'Use colour Doppler to identify small vessels branching from the artery.'
+        ],
+        variations: [
+          'The nerve may branch very high up in the groin.',
+          'Lymph nodes can mimic the appearance of nerves.'
+        ],
+        troubleshooting: [
+          'High injection pressure: Stop immediately. You may be intraneural. Withdraw slightly.',
+          'Poor nerve visibility: Tilt the probe to correct for anisotropy.'
+        ],
+        highRiskStructures: ['Femoral Artery', 'Femoral Nerve (Intraneural injection risk)'],
+        primaryZones: ['anterior-thigh-left', 'medial-calf-left'],
+        secondaryZones: ['anterior-knee-left'],
+        probePosition: { region: 'groin', text: 'Transverse, directly over femoral crease.' },
+        needleAngle: 'Moderate (20-30 degrees)',
+        doses: '15-20ml of 0.25% Levobupivacaine'
+      },
+      {
+        id: 'popliteal',
+        name: 'Popliteal Block',
+        position: 'Prone or Lateral',
+        indications: [
+          'Ankle fractures',
+          'Foot injuries',
+          'Achilles tendon ruptures'
+        ],
+        contraindications: {
+          absolute: ['Patient refusal', 'Infection at injection site', 'Local anaesthetic allergy'],
+          relative: ['Pre-existing peripheral neuropathy']
+        },
+        effects: [
+          'Blocks the sciatic nerve',
+          'Provides analgesia to the lower leg and foot',
+          'Spares the medial aspect of the lower leg'
+        ],
+        technique: [
+          'Position the patient prone or lateral.',
+          'Place a linear probe transversely at the popliteal crease.',
+          'Identify the popliteal artery and vein.',
+          'Look superficial and lateral to the vessels to find the sciatic nerve.',
+          'Trace the nerve proximally until the tibial and common peroneal nerves join.',
+          'Insert the needle in-plane from lateral to medial.',
+          'Advance the needle tip inside the paraneural sheath but outside the epineurium.',
+          'Aspirate.',
+          'Inject 15-20ml of local anaesthetic.',
+          'Look for the donut sign as fluid surrounds the nerve.'
+        ],
+        tips: [
+          'Ask the patient to plantar flex and dorsiflex their foot. Muscle movement makes the static nerve easier to spot.',
+          'Confirm the needle is outside the nerve bundle before injecting.',
+          'Target the nerve proximal to the bifurcation for the best results.'
+        ],
+        variations: [
+          'The bifurcation height of the sciatic nerve varies massively between patients.',
+          'Vessels may sit lateral to the nerve occasionally.'
+        ],
+        troubleshooting: [
+          'Nerve splitting: Do not inject between the distinct fascicles. Stay in the common sheath.',
+          'Deep nerve: Switch to a curvilinear probe if the patient is obese.'
+        ],
+        highRiskStructures: ['Popliteal Artery', 'Popliteal Vein', 'Sciatic Nerve (Intraneural)'],
+        primaryZones: ['lateral-calf-left', 'posterior-calf-left', 'foot-left'],
+        secondaryZones: [],
+        probePosition: { region: 'popliteal', text: 'Transverse, 5-10cm proximal to popliteal crease.' },
+        needleAngle: 'Steep (30-45 degrees)',
+        doses: '15-20ml of 0.25% Levobupivacaine'
+      }
+    ];
+
+    let state = {
+      selectedBlock: blocksData[0],
+      activeTab: 'clinical',
+      searchQuery: '',
+      darkMode: false,
+      sbybChecks: [false, false, false, false, false]
+    };
+
+    function init() {
+      renderInteractiveBodyMap();
+      renderSidebar();
+      renderContent();
+      lucide.createIcons();
+    }
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      const body = document.getElementById('bodyRoot');
+      const header = document.getElementById('mainHeader');
+      const searchInput = document.getElementById('searchInput');
+      const darkModeBtn = document.getElementById('darkModeBtn');
+      const darkModeIcon = document.getElementById('darkModeIcon');
+      const mainCard = document.getElementById('mainCard');
+      const blockHeaderArea = document.getElementById('blockHeaderArea');
+      const cardFooter = document.getElementById('cardFooter');
+      const tabContainer = document.getElementById('tabContainer');
+      const headerSubtext = document.getElementById('headerSubtext');
+
+      if (state.darkMode) {
+        body.classList.add('dark', 'bg-slate-900');
+        body.classList.remove('bg-slate-50');
+        header.classList.replace('bg-blue-900', 'bg-slate-950');
+        searchInput.classList.replace('bg-blue-800', 'bg-slate-800');
+        searchInput.classList.replace('placeholder-blue-300', 'placeholder-slate-500');
+        darkModeBtn.classList.replace('bg-blue-800', 'bg-slate-800');
+        darkModeBtn.classList.replace('hover:bg-blue-700', 'hover:bg-slate-700');
+        darkModeIcon.setAttribute('data-lucide', 'sun');
+        darkModeIcon.classList.replace('text-slate-200', 'text-yellow-400');
+        mainCard.classList.add('dark:bg-slate-900', 'dark:border-slate-800');
+        blockHeaderArea.classList.add('dark:border-slate-800', 'dark:bg-slate-950');
+        cardFooter.classList.add('dark:bg-slate-950', 'dark:border-slate-800');
+        document.getElementById('blockTitle').classList.add('dark:text-white');
+        tabContainer.classList.add('dark:bg-slate-800');
+        headerSubtext.classList.replace('text-blue-200', 'text-slate-400');
+      } else {
+        body.classList.remove('dark', 'bg-slate-900');
+        body.classList.add('bg-slate-50');
+        header.classList.replace('bg-slate-950', 'bg-blue-900');
+        searchInput.classList.replace('bg-slate-800', 'bg-blue-800');
+        searchInput.classList.replace('placeholder-slate-500', 'placeholder-blue-300');
+        darkModeBtn.classList.replace('bg-slate-800', 'bg-blue-800');
+        darkModeBtn.classList.replace('hover:bg-slate-700', 'hover:bg-blue-700');
+        darkModeIcon.setAttribute('data-lucide', 'moon');
+        darkModeIcon.classList.replace('text-yellow-400', 'text-slate-200');
+        mainCard.classList.remove('dark:bg-slate-900', 'dark:border-slate-800');
+        blockHeaderArea.classList.remove('dark:border-slate-800', 'dark:bg-slate-950');
+        cardFooter.classList.remove('dark:bg-slate-950', 'dark:border-slate-800');
+        document.getElementById('blockTitle').classList.remove('dark:text-white');
+        tabContainer.classList.remove('dark:bg-slate-800');
+        headerSubtext.classList.replace('text-slate-400', 'text-blue-200');
+      }
+      lucide.createIcons();
+      updateTabStyles();
+      renderInteractiveBodyMap();
+      renderSidebar();
+      renderContent();
+    }
+
+    function handleSearch() {
+      state.searchQuery = document.getElementById('searchInput').value;
+      renderSidebar();
+    }
+
+    function selectBlock(id) {
+      state.selectedBlock = blocksData.find(b => b.id === id);
+      state.activeTab = 'clinical'; 
+      updateTabStyles();
+      renderInteractiveBodyMap();
+      renderSidebar();
+      renderContent();
+      
+      // Scroll to main content on mobile
+      if(window.innerWidth < 1024) {
+        document.getElementById('mainCard').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      updateTabStyles();
+      renderContent();
+    }
+
+    function updateTabStyles() {
+      const tabClinical = document.getElementById('tabClinical');
+      const tabVisual = document.getElementById('tabVisual');
+      const tabSafety = document.getElementById('tabSafety');
+      
+      const activeClass = state.darkMode ? 'bg-slate-700 text-blue-400 shadow' : 'bg-white text-blue-700 shadow';
+      const inactiveClass = state.darkMode ? 'text-slate-400 hover:text-slate-200 bg-transparent shadow-none' : 'text-slate-600 hover:text-slate-900 bg-transparent shadow-none';
+
+      tabClinical.className = `whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all focus:outline-none ${state.activeTab === 'clinical' ? activeClass : inactiveClass}`;
+      tabVisual.className = `whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all focus:outline-none ${state.activeTab === 'visual' ? activeClass : inactiveClass}`;
+      tabSafety.className = `whitespace-nowrap flex-1 px-4 py-2 rounded text-xs font-bold transition-all focus:outline-none ${state.activeTab === 'safety' ? activeClass : inactiveClass}`;
+    }
+
+    function renderInteractiveBodyMap() {
+      const container = document.getElementById('sidebarBodyMap');
+      const strokeClass = state.darkMode ? "text-slate-600" : "text-slate-400";
+      const baseFillClass = state.darkMode ? "text-slate-700" : "text-slate-200";
+      
+      const getActive = (id) => state.selectedBlock.id === id ? 'active' : '';
+
+      container.innerHTML = `
+        <svg viewBox="0 0 160 380" class="h-48 w-auto">
+          <g stroke="currentColor" class="${strokeClass}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <!-- Outline -->
+            <path class="${baseFillClass}" fill="currentColor" d="M 80 15 C 92 15, 96 30, 92 42 C 88 53, 96 57, 112 60 C 128 64, 132 83, 128 105 C 124 128, 116 165, 112 173 C 108 180, 116 240, 112 263 C 108 285, 112 338, 108 345 C 104 353, 116 360, 116 368 C 116 371, 96 371, 96 360 C 96 338, 88 240, 80 210 C 72 240, 64 338, 64 360 C 64 371, 44 371, 44 368 C 44 360, 56 353, 52 345 C 48 338, 52 285, 48 263 C 44 240, 52 180, 48 173 C 44 165, 36 128, 32 105 C 28 83, 32 64, 48 60 C 64 57, 72 53, 68 42 C 64 30, 68 15, 80 15 Z" />
+            
+            <!-- Clickable Zones -->
+            <path d="M 80 75 L 104 75 C 108 90, 108 113, 100 135 L 80 135 Z" class="body-zone ${getActive('sap')}" onclick="selectBlock('sap')" />
+            <path d="M 80 75 L 56 75 C 52 90, 52 113, 60 135 L 80 135 Z" class="body-zone ${getActive('sap')}" onclick="selectBlock('sap')" />
+            
+            <path d="M 118 120 C 122 135, 116 158, 114 165 L 104 165 C 108 150, 110 135, 108 120 Z" class="body-zone ${getActive('axillary')}" onclick="selectBlock('axillary')" />
+            <path d="M 42 120 C 38 135, 44 158, 46 165 L 56 165 C 52 150, 50 135, 52 120 Z" class="body-zone ${getActive('axillary')}" onclick="selectBlock('axillary')" />
+
+            <path d="M 80 180 L 104 180 C 108 210, 104 248, 96 263 L 80 263 Z" class="body-zone ${getActive('fib')}" onclick="selectBlock('fib')" />
+            <path d="M 80 180 L 56 180 C 52 210, 56 248, 64 263 L 80 263 Z" class="body-zone ${getActive('fib')}" onclick="selectBlock('fib')" />
+
+            <path d="M 80 263 L 96 263 L 92 285 L 80 285 Z" class="body-zone ${getActive('femoral')}" onclick="selectBlock('femoral')" />
+            <path d="M 80 263 L 64 263 L 68 285 L 80 285 Z" class="body-zone ${getActive('femoral')}" onclick="selectBlock('femoral')" />
+          </g>
+          <text x="80" y="390" text-anchor="middle" font-size="10" fill="currentColor" class="${strokeClass} font-bold">Front</text>
+        </svg>
+
+        <svg viewBox="0 0 160 380" class="h-48 w-auto">
+          <g stroke="currentColor" class="${strokeClass}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <!-- Outline -->
+            <path class="${baseFillClass}" fill="currentColor" d="M 80 15 C 68 15, 64 30, 68 42 C 72 53, 64 57, 48 60 C 32 64, 28 83, 32 105 C 36 128, 44 165, 48 173 C 52 180, 44 240, 48 263 C 52 285, 48 338, 52 345 C 56 353, 44 360, 44 368 C 44 371, 64 371, 64 360 C 64 338, 72 240, 80 210 C 88 240, 96 338, 96 360 C 96 371, 116 371, 116 368 C 116 360, 104 353, 108 345 C 112 338, 108 285, 112 263 C 116 240, 108 180, 112 173 C 116 165, 124 128, 128 105 C 132 83, 128 64, 112 60 C 96 57, 88 53, 92 42 C 96 30, 92 15, 80 15 Z" />
+            
+            <!-- Clickable Zones -->
+            <path d="M 80 64 L 60 64 C 56 98, 60 143, 80 165 Z" class="body-zone ${getActive('esp')}" onclick="selectBlock('esp')" />
+            <path d="M 80 64 L 100 64 C 104 98, 100 143, 80 165 Z" class="body-zone ${getActive('esp')}" onclick="selectBlock('esp')" />
+
+            <path d="M 68 263 C 60 285, 64 323, 68 345 L 76 345 C 76 323, 72 285, 80 263 Z" class="body-zone ${getActive('popliteal')}" onclick="selectBlock('popliteal')" />
+            <path d="M 92 263 C 100 285, 96 323, 92 345 L 84 345 C 84 323, 88 285, 80 263 Z" class="body-zone ${getActive('popliteal')}" onclick="selectBlock('popliteal')" />
+          </g>
+          <text x="80" y="390" text-anchor="middle" font-size="10" fill="currentColor" class="${strokeClass} font-bold">Back</text>
+        </svg>
+      `;
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('sidebarNav');
+      const filtered = blocksData.filter(b => 
+        b.name.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
+        b.indications.some(i => i.toLowerCase().includes(state.searchQuery.toLowerCase()))
+      );
+
+      container.innerHTML = `<h2 class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-xs px-2 mb-2">Or Select Below</h2>`;
+      
+      if (filtered.length === 0) {
+        container.innerHTML += `<p class="text-xs text-slate-500 p-2">No results found.</p>`;
+        return;
+      }
+
+      filtered.forEach(block => {
+        const isSelected = state.selectedBlock.id === block.id;
+        const baseClass = "w-full text-left px-4 py-3 rounded-lg transition-all duration-200 border-l-4 focus:outline-none";
+        const selectedClass = state.darkMode 
+          ? "bg-slate-800 border-blue-600 text-blue-400 shadow font-bold" 
+          : "bg-white border-blue-600 text-blue-900 shadow font-bold";
+        const unselectedClass = state.darkMode
+          ? "bg-transparent border-transparent text-slate-400 hover:bg-slate-800"
+          : "bg-transparent border-transparent text-slate-600 hover:bg-slate-200";
+
+        const btnClass = `${baseClass} ${isSelected ? selectedClass : unselectedClass}`;
+        
+        container.innerHTML += `
+          <button onclick="selectBlock('${block.id}')" class="${btnClass}">
+            <span class="text-sm">${block.name}</span>
+          </button>
+        `;
+      });
+    }
+
+    function renderContent() {
+      document.getElementById('blockTitle').innerText = state.selectedBlock.name;
+      const contentDiv = document.getElementById('tabContent');
+      
+      if (state.activeTab === 'clinical') {
+        contentDiv.innerHTML = getClinicalHTML();
+        updateEPRIndications();
+        updateEPR();
+      } else if (state.activeTab === 'visual') {
+        contentDiv.innerHTML = getVisualHTML();
+        setTimeout(replayAnimation, 50);
+      } else if (state.activeTab === 'safety') {
+        contentDiv.innerHTML = getSafetyHTML();
+        calculateDose();
+      }
+      lucide.createIcons();
+    }
+
+    function getSafetyHTML() {
+      return `
+        <div class="space-y-6">
+          ${getCalculatorHTML()}
+          ${getLASTHTML()}
+        </div>
+      `;
+    }
+
+    function getClinicalHTML() {
+      const b = state.selectedBlock;
+      return `
+        <div class="space-y-6">
+          ${getSBYBHTML()}
+          ${getEPRHTML()}
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <section>
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-3 border-b pb-2 dark:border-slate-700">Indications</h3>
+              <ul class="space-y-2 pl-2">
+                ${b.indications.map(i => `<li class="flex items-start gap-2 text-slate-700 dark:text-slate-300 text-sm"><span class="text-green-600 mt-0.5">•</span>${i}</li>`).join('')}
+              </ul>
+            </section>
+
+            <section>
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-3 border-b pb-2 dark:border-slate-700">Contraindications</h3>
+              <div class="space-y-3">
+                <div>
+                  <span class="text-xs font-bold uppercase text-red-600 dark:text-red-400">Absolute</span>
+                  <ul class="pl-2 mt-1 space-y-1">
+                    ${b.contraindications.absolute.map(i => `<li class="text-slate-700 dark:text-slate-300 text-sm">- ${i}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <span class="text-xs font-bold uppercase text-amber-600 dark:text-amber-400">Relative</span>
+                  <ul class="pl-2 mt-1 space-y-1">
+                    ${b.contraindications.relative.map(i => `<li class="text-slate-700 dark:text-slate-300 text-sm">- ${i}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+    }
+
+    function getLASTHTML() {
+      return `
+        <div class="bg-red-950 border-l-4 border-red-500 p-4 rounded-r-lg text-white mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="shield-alert" class="text-red-400 w-6 h-6"></i>
+            <h3 class="font-bold text-lg">Local Anaesthetic Systemic Toxicity (LAST) Protocol</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-3">
+            <div>
+              <strong class="text-red-300">Signs & Symptoms:</strong>
+              <ul class="list-disc pl-5 mt-1 space-y-1">
+                <li>Agitation, confusion, slurred speech.</li>
+                <li>Muscle twitching, tremors, seizures.</li>
+                <li>Tachycardia, hypertension (early).</li>
+                <li>Bradycardia, hypotension, cardiac arrest (late).</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-red-300">Immediate Management:</strong>
+              <ul class="list-disc pl-5 mt-1 space-y-1">
+                <li>Stop injection immediately. Call for help.</li>
+                <li>Manage ABC. Provide 100% Oxygen.</li>
+                <li>Treat seizures (Benzodiazepines).</li>
+                <li><strong>Intralipid 20%:</strong> Give 1.5ml/kg over 1 minute. Follow with 15ml/kg/hr infusion.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getSBYBHTML() {
+      const items = [
+        'Patient identity and consent confirmed.',
+        'Surgical/injury site marked.',
+        'Monitoring attached (SpO2, ECG, BP).',
+        'Intravenous access established.',
+        'Resuscitation equipment and Intralipid available.'
+      ];
+      const allChecked = state.sbybChecks.every(Boolean);
+      const containerClass = allChecked ? 'bg-green-50/10 border-green-500' : 'bg-slate-100 dark:bg-slate-800 border-amber-500';
+      const headerColor = allChecked ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400';
+      const iconColor = allChecked ? 'text-green-500' : 'text-amber-500';
+
+      let html = `
+        <div class="p-4 rounded-lg border-2 mb-6 transition-colors ${containerClass}" id="sbybContainer">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="check-square" class="${iconColor} w-5 h-5" id="sbybIcon"></i>
+            <h3 class="font-bold ${headerColor}" id="sbybHeader">Stop Before You Block</h3>
+          </div>
+          <div class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+      `;
+      items.forEach((item, i) => {
+        const checked = state.sbybChecks[i] ? 'checked' : '';
+        const lineThrough = state.sbybChecks[i] ? 'line-through opacity-60' : '';
+        html += `
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" ${checked} onchange="toggleSBYB(${i})" class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+              <span id="sbybText${i}" class="${lineThrough}">${item}</span>
+            </label>
+        `;
+      });
+      html += `</div></div>`;
+      return html;
+    }
+
+    function toggleSBYB(index) {
+      state.sbybChecks[index] = !state.sbybChecks[index];
+      renderContent(); 
+    }
+
+    function getCalculatorHTML() {
+      return `
+        <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 mb-6 shadow-sm">
+          <h3 class="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <i data-lucide="scale" class="w-5 h-5"></i> Advanced IBW & Toxicity Calculator
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Sex</label>
+              <select id="calcSex" oninput="calculateDose()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Height (cm)</label>
+              <input type="number" id="calcHeight" oninput="calculateDose()" placeholder="e.g. 175" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Actual Weight (kg)</label>
+              <input type="number" id="calcWeight" oninput="calculateDose()" placeholder="e.g. 90" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Local Anaesthetic</label>
+              <select id="calcLaType" oninput="calculateDose()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="lbup_025">0.25% Levobupivacaine</option>
+                <option value="lbup_05">0.5% Levobupivacaine</option>
+                <option value="bup_025">0.25% Bupivacaine</option>
+                <option value="lid_1">1% Lidocaine plain</option>
+              </select>
+            </div>
+          </div>
+          <div id="calcResults" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+             <!-- Injected by JS -->
+          </div>
+        </div>
+      `;
+    }
+
+    function calculateDose() {
+      const weightInput = document.getElementById('calcWeight');
+      if(!weightInput) return;
+      
+      const w = parseFloat(weightInput.value);
+      const h = parseFloat(document.getElementById('calcHeight').value);
+      const sex = document.getElementById('calcSex').value;
+      const laType = document.getElementById('calcLaType').value;
+      const resultsDiv = document.getElementById('calcResults');
+
+      if (isNaN(w) || w <= 0) {
+        resultsDiv.classList.add('hidden');
+        return;
+      }
+
+      let ibw = 0;
+      if (h >= 100) {
+        const base = sex === 'M' ? 50 : 45.5;
+        ibw = base + 0.91 * (h - 152.4);
+      }
+      
+      if (ibw <= 0 || isNaN(ibw)) ibw = w; 
+      const doseWeight = Math.min(w, ibw);
+
+      let maxDoseMgKg = 2; let mgPerMl = 2.5; 
+      if(laType === 'lbup_05') mgPerMl = 5.0;
+      if(laType === 'lid_1') { maxDoseMgKg = 3; mgPerMl = 10; }
+
+      const maxMg = doseWeight * maxDoseMgKg;
+      const maxMl = maxMg / mgPerMl;
+      const lipidBolus = w * 1.5;
+      const lipidInfusion = w * 15;
+
+      resultsDiv.innerHTML = `
+        <div class="p-3 bg-blue-100 dark:bg-blue-900/40 rounded border border-blue-200 dark:border-blue-800">
+          <h4 class="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-2 border-b border-blue-200 dark:border-blue-800 pb-1">Anaesthetic Limit</h4>
+          <div class="text-sm text-blue-900 dark:text-blue-100 space-y-1">
+            <div class="flex justify-between"><span>Calculated IBW:</span> <span class="font-mono">${ibw.toFixed(1)} kg</span></div>
+            <div class="flex justify-between"><span>Dosing Weight Used:</span> <span class="font-mono">${doseWeight.toFixed(1)} kg</span></div>
+            <div class="flex justify-between font-bold mt-2 pt-2 border-t border-blue-200 dark:border-blue-800 text-lg">
+              <span>Max Safe Dose:</span>
+              <span class="text-red-600 dark:text-red-400">${maxMg.toFixed(0)} mg (${maxMl.toFixed(1)} ml)</span>
+            </div>
+          </div>
+        </div>
+        <div class="p-3 bg-red-100 dark:bg-red-900/40 rounded border border-red-200 dark:border-red-800">
+          <h4 class="text-xs font-bold text-red-800 dark:text-red-300 uppercase mb-2 border-b border-red-200 dark:border-red-800 pb-1 flex items-center gap-1"><i data-lucide="alert-circle" class="w-4 h-4"></i> Intralipid 20% Rescue</h4>
+          <div class="text-sm text-red-900 dark:text-red-100 space-y-1">
+            <div class="flex justify-between text-xs opacity-80"><span>Uses actual weight:</span> <span class="font-mono">${w} kg</span></div>
+            <div class="flex justify-between font-bold mt-2"><span>Initial Bolus:</span> <span class="font-mono">${lipidBolus.toFixed(0)} ml</span></div>
+            <div class="flex justify-between font-bold"><span>Infusion Rate:</span> <span class="font-mono">${lipidInfusion.toFixed(0)} ml/hr</span></div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+      resultsDiv.classList.remove('hidden');
+    }
+
+    function getEPRHTML() {
+      return `
+        <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 mb-6 shadow-sm">
+          <div class="flex justify-between items-center mb-4 border-b border-slate-300 dark:border-slate-600 pb-2">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <i data-lucide="clipboard" class="w-5 h-5"></i> Governance & EPR Generator
+            </h3>
+            <button onclick="copyEPR()" id="copyEprBtn" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-xs font-bold transition-colors focus:outline-none">
+              <i data-lucide="clipboard" class="w-4 h-4" id="copyEprIcon"></i>
+              <span id="copyEprText">Copy to EPR</span>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 border-b border-slate-300 dark:border-slate-700 pb-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Practitioner Name</label>
+              <input type="text" id="eprPrac" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Dr J Smith" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Grade</label>
+              <select id="eprGrade" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Consultant</option>
+                <option selected>Registrar</option>
+                <option>SHO</option>
+                <option>ACP</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">GMC Number</label>
+              <input type="text" id="eprGmc" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 1234567" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4 border-b border-slate-300 dark:border-slate-700 pb-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Side</label>
+              <select id="eprSide" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Left</option>
+                <option>Right</option>
+                <option>Bilateral</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">US Machine</label>
+              <select id="eprMachine" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Sonosite PX</option>
+                <option>Sonosite X-Porte</option>
+                <option>GE Venue</option>
+                <option>Mindray TE7</option>
+                <option>Butterfly iQ</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">LA Type</label>
+              <select id="eprLa" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option>0.25% Levobupivacaine</option>
+                <option>0.5% Levobupivacaine</option>
+                <option>0.25% Bupivacaine</option>
+                <option>1% Lidocaine plain</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Volume (ml)</label>
+              <input type="number" id="eprVol" value="20" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Weight (kg)</label>
+              <input type="number" id="eprWeight" value="70" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div class="col-span-1 md:col-span-2">
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Indication</label>
+              <select id="eprIndication" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <!-- Injected via JS -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Pre-Pain (0-10)</label>
+              <input type="number" id="eprPrePain" min="0" max="10" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 8" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Post-Pain (0-10)</label>
+              <input type="number" id="eprPostPain" min="0" max="10" oninput="updateEPR()" class="w-full p-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 2" />
+            </div>
+          </div>
+
+          <div class="mb-4 bg-amber-50 dark:bg-amber-900/20 p-3 rounded border border-amber-200 dark:border-amber-800">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="eprSbyb" onchange="updateEPR()" class="w-5 h-5 rounded text-amber-600 focus:ring-amber-500 border-slate-300" />
+              <span class="text-sm font-bold text-amber-800 dark:text-amber-400">I confirm the 'Stop Before You Block' checklist was performed.</span>
+            </label>
+          </div>
+          
+          <textarea id="eprTextarea" readonly class="w-full h-48 p-3 rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-300 text-xs font-mono focus:outline-none resize-y"></textarea>
+        </div>
+      `;
+    }
+
+    function updateEPRIndications() {
+      const select = document.getElementById('eprIndication');
+      if(!select) return;
+      select.innerHTML = state.selectedBlock.indications.map(ind => `<option value="${ind}">${ind}</option>`).join('') + `<option value="Other">Other</option>`;
+    }
+
+    function updateEPR() {
+      const textarea = document.getElementById('eprTextarea');
+      if(!textarea) return;
+
+      const prac = document.getElementById('eprPrac').value;
+      const grade = document.getElementById('eprGrade').value;
+      const gmc = document.getElementById('eprGmc').value;
+      const side = document.getElementById('eprSide').value;
+      const machine = document.getElementById('eprMachine').value;
+      const la = document.getElementById('eprLa').value;
+      const vol = document.getElementById('eprVol').value;
+      const weight = document.getElementById('eprWeight').value;
+      const ind = document.getElementById('eprIndication').value;
+      const preP = document.getElementById('eprPrePain').value;
+      const postP = document.getElementById('eprPostPain').value;
+      const sbyb = document.getElementById('eprSbyb').checked;
+
+      textarea.value = `PROCEDURE: Ultrasound-Guided ${state.selectedBlock.name}
+SIDE: ${side}
+INDICATION: ${ind}
+PRACTITIONER: ${prac} (${grade}) - GMC: ${gmc}
+
+PRE-PROCEDURE:
+Consent: Verbal consent obtained. Risks explained (infection, bleeding, nerve injury, systemic toxicity, block failure).
+Stop Before You Block: ${sbyb ? 'YES - Checklist completed.' : 'NOT CONFIRMED.'}
+Preparation: IV access secured. Monitoring attached. Resuscitation equipment and Intralipid 20% available.
+Pre-Block Pain Score: ${preP ? preP + '/10' : 'Not recorded'}
+
+TECHNIQUE:
+Ultrasound Machine: ${machine}
+Asepsis: Aseptic non-touch technique used. Chlorhexidine 2% skin prep applied.
+Visualisation: Target nerve and fascial plane clearly visualised.
+Approach: In-plane needle approach used. Negative aspiration for blood prior to and during injection.
+Spread: Good anechoic local anaesthetic spread observed.
+
+LOCAL ANAESTHETIC:
+Patient Weight: ${weight} kg
+Drug: ${la}
+Volume Injected: ${vol} ml
+
+POST-PROCEDURE:
+Complications: None immediate. Patient tolerated procedure well.
+Post-Block Pain Score (at 30 mins): ${postP ? postP + '/10' : 'To be assessed'}
+
+NURSING INSTRUCTIONS:
+1. Routine observations (HR, BP, SpO2) every 15 mins for 1 hour.
+2. Protect blocked area from injury, pressure, and heat.
+3. Observe strictly for signs of LAST.
+4. Escalate to ED medical team if you suspect LAST or notice unexpected severe pain.`;
+    }
+
+    function copyEPR() {
+      const textarea = document.getElementById('eprTextarea');
+      textarea.select();
+      document.execCommand('copy');
+      
+      const btnText = document.getElementById('copyEprText');
+      const btnIcon = document.getElementById('copyEprIcon');
+      btnText.innerText = "Copied to Clipboard!";
+      btnIcon.setAttribute('data-lucide', 'clipboard-check');
+      lucide.createIcons();
+      
+      setTimeout(() => {
+        btnText.innerText = "Copy to EPR";
+        btnIcon.setAttribute('data-lucide', 'clipboard');
+        lucide.createIcons();
+      }, 2000);
+    }
+
+    function getVisualHTML() {
+      const b = state.selectedBlock;
+      return `
+        <div class="space-y-8" id="visualContainer">
+          <div class="flex flex-col xl:flex-row gap-6">
+            <div class="flex-1">
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="font-extrabold text-slate-800 dark:text-slate-200">Interactive Ultrasound Guide</h3>
+                <button onclick="replayAnimation()" class="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-bold hover:underline focus:outline-none">
+                  <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Replay
+                </button>
+              </div>
+              <div id="usSliderContainer" class="relative w-full aspect-video border-4 border-slate-900 rounded-lg overflow-hidden bg-black group">
+                <!-- SVG Injected here -->
+              </div>
+            </div>
+            
+            <div class="w-full xl:w-72 flex flex-col gap-4">
+              <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-2 border-b border-slate-300 dark:border-slate-600 pb-1">Block Parameters</h4>
+                <ul class="space-y-3 text-xs text-slate-700 dark:text-slate-300">
+                  <li><strong class="block text-slate-500 dark:text-slate-400">Patient Position</strong> ${b.position}</li>
+                  <li><strong class="block text-slate-500 dark:text-slate-400">Probe Position</strong> ${b.probePosition.text}</li>
+                  <li><strong class="block text-slate-500 dark:text-slate-400">Needle Trajectory</strong> In-plane, ${b.needleAngle}.</li>
+                </ul>
+              </div>
+              
+              <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-900/50 shadow-sm">
+                <h4 class="font-bold text-sm text-red-800 dark:text-red-400 mb-2 flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4"></i> High Risk Structures</h4>
+                <ul class="space-y-1 text-xs text-red-700 dark:text-red-300">
+                  ${b.highRiskStructures.map(s => `<li>- ${s}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-6">
+            <div>
+              <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"><i data-lucide="user" class="w-5 h-5"></i> Sensory Blockade Area</h3>
+              <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 h-full shadow-sm" id="bodyMapContainer">
+                <!-- BodyMap Injected Here -->
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"><i data-lucide="ruler" class="w-5 h-5"></i> Probe Placement</h3>
+              <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg flex flex-col items-center justify-center border border-slate-200 dark:border-slate-700 h-full shadow-sm">
+                <svg viewBox="0 0 350 450" class="w-full h-56 drop-shadow-md">
+                  ${getMacroscopicSVG(b.id)}
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-6">
+            <div class="space-y-6">
+              <section>
+                <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2"><i data-lucide="syringe" class="w-5 h-5"></i> Technique</h3>
+                <ol class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                  ${b.technique.map((step, idx) => `<li class="flex gap-2"><span class="font-bold text-blue-600 dark:text-blue-400">${idx + 1}.</span> ${step}</li>`).join('')}
+                </ol>
+              </section>
+            </div>
+            
+            <div class="space-y-6">
+              <section>
+                <h3 class="font-extrabold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5"></i> Troubleshooting & Variations</h3>
+                <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                  ${b.troubleshooting.map(t => `<li class="border-l-2 border-amber-500 pl-2 py-1">${t}</li>`).join('')}
+                  ${b.variations.map(v => `<li class="border-l-2 border-blue-500 pl-2 py-1">${v}</li>`).join('')}
+                </ul>
+              </section>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function replayAnimation() {
+      const container = document.getElementById('usSliderContainer');
+      const bodyMap = document.getElementById('bodyMapContainer');
+      if(container) {
+        container.innerHTML = getUltrasoundSVG(state.selectedBlock.id, 50);
+      }
+      if(bodyMap) {
+        bodyMap.innerHTML = getBodyMapSVG(state.selectedBlock.primaryZones, state.selectedBlock.secondaryZones);
+      }
+    }
+
+    function updateSlider(val) {
+      const clipWidth = (val / 100) * 600;
+      const rect = document.getElementById('sliderRect');
+      const line = document.getElementById('sliderLine');
+      const handle = document.getElementById('sliderHandle');
+      if(rect) rect.setAttribute('width', clipWidth);
+      if(line) { line.setAttribute('x1', clipWidth); line.setAttribute('x2', clipWidth); }
+      if(handle) handle.style.left = `calc(${val}% - 16px)`;
+    }
+
+    function getMacroscopicSVG(blockId) {
+      switch (blockId) {
+        case 'sap': return `
+          <g>
+            <path d="M 150 50 C 160 30, 190 30, 200 50 C 210 70, 200 90, 175 90 C 150 90, 140 70, 150 50 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+            <path d="M 175 90 L 175 250 L 150 400 L 130 400 L 150 250 L 140 250 L 110 90" fill="none" stroke="#475569" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 175 90 L 240 100 L 260 160" fill="none" stroke="#475569" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="140" y="140" width="40" height="12" rx="4" fill="#3b82f6" transform="rotate(-15, 160, 146)" />
+            <line x1="160" y1="146" x2="160" y2="120" stroke="#3b82f6" stroke-width="2" stroke-dasharray="2" />
+            <text x="190" y="140" fill="#3b82f6" font-size="12" font-weight="bold">Transverse, 5th Rib</text>
+          </g>`;
+        case 'esp': return `
+          <g>
+            <path d="M 150 50 C 160 30, 190 30, 200 50 C 210 70, 200 90, 175 90 C 150 90, 140 70, 150 50 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+            <path d="M 175 90 L 175 250 L 250 250 L 250 320" fill="none" stroke="#475569" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 175 100 L 200 160 L 220 160" fill="none" stroke="#475569" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="160" y="150" width="12" height="40" rx="4" fill="#3b82f6" />
+            <line x1="166" y1="150" x2="166" y2="120" stroke="#3b82f6" stroke-width="2" stroke-dasharray="2" />
+            <text x="180" y="170" fill="#3b82f6" font-size="12" font-weight="bold">Sagittal, 3cm Lat.</text>
+          </g>`;
+        case 'axillary': return `
+          <g>
+            <path d="M 150 50 C 160 30, 190 30, 200 50 C 210 70, 200 90, 175 90 C 150 90, 140 70, 150 50 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+            <path d="M 175 90 L 175 250 L 150 400 L 130 400 L 150 250 L 200 250 L 220 400 L 200 400 L 175 250" fill="none" stroke="#475569" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 175 90 L 260 90 L 260 30" fill="none" stroke="#475569" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="210" y="80" width="12" height="30" rx="4" fill="#3b82f6" transform="rotate(20, 216, 95)" />
+            <text x="230" y="85" fill="#3b82f6" font-size="12" font-weight="bold">Axillary Crease</text>
+          </g>`;
+        case 'fib':
+        case 'femoral': return `
+          <g>
+            <path d="M 150 50 C 160 30, 190 30, 200 50 C 210 70, 200 90, 175 90 C 150 90, 140 70, 150 50 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+            <path d="M 175 90 L 175 220" fill="none" stroke="#475569" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 165 220 L 140 380 L 120 380" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 185 220 L 210 380 L 230 380" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="180" y="225" width="30" height="10" rx="4" fill="#3b82f6" transform="rotate(-15, 195, 230)" />
+            <text x="220" y="240" fill="#3b82f6" font-size="12" font-weight="bold">${blockId === 'fib' ? 'Transverse Lateral' : 'Transverse Crease'}</text>
+          </g>`;
+        case 'popliteal': return `
+          <g>
+            <path d="M 150 50 C 160 30, 190 30, 200 50 C 210 70, 200 90, 175 90 C 150 90, 140 70, 150 50 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+            <path d="M 175 90 L 175 220" fill="none" stroke="#475569" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 165 220 L 140 380" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 185 220 L 210 380" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="190" y="300" width="30" height="10" rx="4" fill="#3b82f6" />
+            <text x="230" y="308" fill="#3b82f6" font-size="12" font-weight="bold">5cm proximal</text>
+          </g>`;
+        default: return '';
+      }
+    }
+
+    function getBodyMapSVG(primary, secondary) {
+      const getFill = (zone) => {
+        if(primary.includes(zone)) return "rgba(59, 130, 246, 0.85)";
+        if(secondary.includes(zone)) return "rgba(59, 130, 246, 0.3)";
+        return "transparent";
+      };
+      
+      const fillClass = "text-slate-200 dark:text-slate-700";
+      const strokeClass = "text-slate-400 dark:text-slate-600";
+
+      return `
+        <div class="flex flex-col md:flex-row justify-center items-center gap-12 rounded-xl h-full">
+          <div class="flex flex-col items-center">
+            <h4 class="text-sm font-extrabold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-widest">Anterior</h4>
+            <svg viewBox="0 0 200 500" class="h-64 w-auto drop-shadow-md">
+              <g class="${strokeClass}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+                <path class="${fillClass}" d="M 100 20 C 115 20, 120 40, 115 55 C 110 70, 120 75, 140 80 C 160 85, 165 110, 160 140 C 155 170, 145 220, 140 230 C 135 240, 145 320, 140 350 C 135 380, 140 450, 135 460 C 130 470, 145 480, 145 490 C 145 495, 120 495, 120 480 C 120 450, 110 320, 100 280 C 90 320, 80 450, 80 480 C 80 495, 55 495, 55 490 C 55 480, 70 470, 65 460 C 60 450, 65 380, 60 350 C 55 320, 65 240, 60 230 C 55 220, 45 170, 40 140 C 35 110, 40 85, 60 80 C 80 75, 90 70, 85 55 C 80 40, 85 20, 100 20 Z" fill="currentColor" />
+                <path d="M 100 100 L 130 100 C 135 120, 135 150, 125 180 L 100 180 Z" fill="${getFill('lateral-chest-left')}" />
+                <path d="M 100 100 L 70 100 C 65 120, 65 150, 75 180 L 100 180 Z" fill="${getFill('lateral-chest-right')}" />
+                <path d="M 100 100 L 130 100 L 100 180 Z" fill="${getFill('anterior-chest-left')}" />
+                <path d="M 148 160 C 152 180, 145 210, 142 220 L 130 220 C 135 200, 138 180, 135 160 Z" fill="${getFill('forearm-left')}" />
+                <path d="M 142 220 C 140 230, 145 240, 135 245 C 130 240, 128 230, 130 220 Z" fill="${getFill('hand-left')}" />
+                <path d="M 100 240 L 130 240 C 135 280, 130 330, 120 350 L 100 350 Z" fill="${getFill('anterior-thigh-left')}" />
+                <path d="M 130 240 C 135 270, 132 310, 120 350 L 110 350 C 120 310, 125 270, 120 240 Z" fill="${getFill('lateral-thigh-left')}" />
+                <path d="M 100 240 L 110 240 C 110 280, 105 330, 100 350 Z" fill="${getFill('medial-thigh-left')}" />
+                <path d="M 100 350 L 120 350 L 115 380 L 100 380 Z" fill="${getFill('anterior-knee-left')}" />
+                <path d="M 100 380 L 110 380 C 105 410, 105 440, 105 460 L 95 460 Z" fill="${getFill('medial-calf-left')}" />
+                <path d="M 110 380 C 115 400, 120 420, 115 460 L 105 460 C 105 420, 108 400, 105 380 Z" fill="${getFill('lateral-calf-left')}" />
+                <path d="M 115 460 C 120 470, 135 480, 135 490 C 135 495, 110 495, 110 480 C 110 470, 105 465, 105 460 Z" fill="${getFill('foot-left')}" />
+                <line x1="70" y1="240" x2="130" y2="240" opacity="0.3" />
+                <line x1="60" y1="350" x2="140" y2="350" opacity="0.3" />
+                <line x1="65" y1="460" x2="135" y2="460" opacity="0.3" />
+              </g>
+            </svg>
+          </div>
+          <div class="flex flex-col items-center">
+            <h4 class="text-sm font-extrabold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-widest">Posterior</h4>
+            <svg viewBox="0 0 200 500" class="h-64 w-auto drop-shadow-md">
+              <g class="${strokeClass}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+                <path class="${fillClass}" d="M 100 20 C 85 20, 80 40, 85 55 C 90 70, 80 75, 60 80 C 40 85, 35 110, 40 140 C 45 170, 55 220, 60 230 C 65 240, 55 320, 60 350 C 65 380, 60 450, 65 460 C 70 470, 55 480, 55 490 C 55 495, 80 495, 80 480 C 80 450, 90 320, 100 280 C 110 320, 120 450, 120 480 C 120 495, 145 495, 145 490 C 145 480, 130 470, 135 460 C 140 450, 135 380, 140 350 C 145 320, 135 240, 140 230 C 145 220, 155 170, 160 140 C 165 110, 160 85, 140 80 C 120 75, 110 70, 115 55 C 120 40, 115 20, 100 20 Z" fill="currentColor" />
+                <path d="M 100 85 L 75 85 C 70 130, 75 190, 100 220 Z" fill="${getFill('posterior-back-left')}" />
+                <path d="M 85 350 C 75 380, 80 430, 85 460 L 95 460 C 95 430, 90 380, 100 350 Z" fill="${getFill('posterior-calf-left')}" />
+                <path d="M 85 460 C 75 470, 55 480, 55 490 C 55 495, 80 495, 80 480 C 80 470, 90 465, 95 460 Z" fill="${getFill('foot-left')}" />
+                <line x1="100" y1="55" x2="100" y2="230" opacity="0.3" stroke-dasharray="4 2" />
+                <line x1="60" y1="350" x2="140" y2="350" opacity="0.3" />
+                <line x1="65" y1="460" x2="135" y2="460" opacity="0.3" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function getUltrasoundSVG(blockId, val) {
+      const clipWidth = (val / 100) * 600;
+      
+      const render = (mode) => {
+        const isUS = mode === 'us';
+        const c = isUS ? 'saturate-0 contrast-125 brightness-75' : '';
+        const lo = isUS ? '0' : '1';
+        const fluidClass = 'animate-fluid origin-center';
+        const needleClass = 'animate-needle';
+        const needleLeftClass = 'animate-needle-left';
+        const liftClass = 'animate-fascia';
+
+        switch(blockId) {
+          case 'sap': return `
+            <g class="${c}">
+              ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 20 Q 300 40 600 20 L 600 140 Q 300 160 0 140 Z" fill="${isUS?'#444':'#b91c1c'}" opacity="0.8" />
+              <text x="30" y="80" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}" class="drop-shadow-md">Latissimus Dorsi</text>
+              <path d="M 0 140 Q 300 160 600 140 L 600 250 L 0 250 Z" fill="${isUS?'#333':'#991b1b'}" opacity="0.9" />
+              <text x="30" y="200" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}" class="drop-shadow-md">Serratus Anterior</text>
+              <circle cx="150" cy="300" r="45" fill="${isUS?'#ddd':'#e2e8f0'}" />
+              <circle cx="450" cy="300" r="45" fill="${isUS?'#ddd':'#e2e8f0'}" />
+              <path d="M 185 280 Q 300 285 415 280 L 415 310 Q 300 315 185 310 Z" fill="${isUS?'#222':'#7f1d1d'}" />
+              <line x1="0" y1="340" x2="600" y2="340" stroke="#fff" stroke-width="${isUS?6:4}" class="${isUS?'drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]':''}" />
+              <text x="30" y="365" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Pleura</text>
+              <line x1="0" y1="140" x2="600" y2="140" stroke="#fff" stroke-width="2" stroke-dasharray="8" opacity="${isUS?0.3:1}" />
+              <ellipse cx="300" cy="140" rx="140" ry="25" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+              <g class="${needleClass}">
+                <line x1="550" y1="20" x2="310" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+          
+          case 'esp': return `
+            <g class="${c}">
+              ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 0 L 600 0 L 600 80 L 0 80 Z" fill="${isUS?'#444':'#b91c1c'}" opacity="0.6" />
+              <text x="30" y="50" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Trapezius / Rhomboid</text>
+              <path d="M 0 80 L 600 80 L 600 280 L 0 280 Z" fill="${isUS?'#333':'#991b1b'}" class="${liftClass}" style="transform-origin: top center" />
+              <text x="30" y="160" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Erector Spinae</text>
+              <path d="M 180 280 Q 280 230 380 280 L 380 400 L 180 400 Z" fill="${isUS?'#ddd':'#e2e8f0'}" />
+              <text x="210" y="320" fill="${isUS?'#333':'#1e293b'}" font-size="16" font-weight="bold" opacity="${lo}">Transverse Process</text>
+              <ellipse cx="280" cy="265" rx="100" ry="30" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+              <g class="${needleClass}">
+                <line x1="80" y1="20" x2="270" y2="250" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+
+          case 'axillary': return `
+            <g class="${c}">
+              ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 0 L 600 0 L 600 400 L 0 400 Z" fill="${isUS?'#222':'#fca5a5'}" opacity="0.4" />
+              <path d="M 20 150 C 60 100, 160 100, 180 150 C 160 220, 60 220, 20 150 Z" fill="${isUS?'#333':'#b91c1c'}" opacity="0.6" />
+              <circle cx="100" cy="160" r="14" fill="${isUS?'#ccc':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="60" y="200" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Musculocutaneous</text>
+              <circle cx="320" cy="200" r="40" fill="${isUS?'#000':'#ef4444'}" class="animate-pulse-artery" />
+              <text x="305" y="205" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">AA</text>
+              <path d="M 400 150 Q 430 130 460 150 Q 430 180 400 150 Z" fill="${isUS?'#111':'#3b82f6'}" opacity="0.8" />
+              <path d="M 380 260 Q 420 240 450 260 Q 420 290 380 260 Z" fill="${isUS?'#111':'#3b82f6'}" opacity="0.8" />
+              <circle cx="260" cy="140" r="12" fill="${isUS?'#bbb':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="200" y="130" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Median</text>
+              <circle cx="240" cy="260" r="12" fill="${isUS?'#bbb':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="190" y="280" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Ulnar</text>
+              <circle cx="400" cy="210" r="12" fill="${isUS?'#bbb':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="420" y="215" fill="#fff" font-size="14" font-weight="bold" opacity="${lo}">Radial</text>
+              <path d="M 220 120 Q 320 80 360 210 Q 300 300 220 240 Z" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.7" />
+              <g class="${needleLeftClass}">
+                <line x1="20" y1="20" x2="230" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+
+          case 'fib': return `
+            <g class="${c}">
+               ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 180 Q 300 280 600 180 L 600 400 L 0 400 Z" fill="${isUS?'#333':'#991b1b'}" />
+              <text x="40" y="320" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Iliopsoas Muscle</text>
+              <path d="M 0 180 Q 300 280 600 180" fill="none" stroke="#fff" stroke-width="${isUS?6:3}" class="${isUS?'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]':''}" />
+              <text x="40" y="160" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Fascia Iliaca</text>
+              <ellipse cx="430" cy="235" rx="25" ry="12" fill="${isUS?'#888':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="385" y="275" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Femoral N.</text>
+              <circle cx="540" cy="200" r="30" fill="${isUS?'#000':'#ef4444'}" class="animate-pulse-artery" />
+              <path d="M 140 210 Q 300 300 450 230 L 430 195 Q 300 240 140 180 Z" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" />
+              <g class="${needleLeftClass}">
+                <line x1="30" y1="30" x2="220" y2="225" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+            
+          case 'femoral': return `
+            <g class="${c}">
+               ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 160 Q 300 220 600 160 L 600 400 L 0 400 Z" fill="${isUS?'#333':'#991b1b'}" opacity="0.8" />
+              <path d="M 0 160 Q 300 220 600 160" fill="none" stroke="#fff" stroke-width="${isUS?6:3}" class="${isUS?'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]':''}" />
+              <text x="30" y="140" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Fascia Iliaca</text>
+              <polygon points="250,195 310,195 280,225" fill="${isUS?'#888':'#fde047'}" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]':''}" />
+              <text x="220" y="250" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Femoral Nerve</text>
+              <circle cx="410" cy="180" r="35" fill="${isUS?'#000':'#ef4444'}" class="animate-pulse-artery" />
+              <text x="395" y="185" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">FA</text>
+              <path d="M 480 150 Q 530 140 540 190 Q 490 200 480 150 Z" fill="${isUS?'#111':'#3b82f6'}" opacity="0.8" />
+              <text x="500" y="175" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">FV</text>
+              <ellipse cx="280" cy="210" rx="60" ry="35" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" opacity="0.8" />
+              <g class="${needleLeftClass}">
+                <line x1="30" y1="40" x2="235" y2="195" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+            
+          case 'popliteal': return `
+            <g class="${c}">
+              ${isUS ? '<rect width="600" height="400" fill="url(#usNoise)" opacity="0.3" style="mix-blend-mode: overlay" />' : ''}
+              <path d="M 0 0 L 600 0 L 600 400 L 0 400 Z" fill="${isUS?'#222':'#fca5a5'}" opacity="0.3" />
+              <text x="30" y="40" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Biceps Femoris</text>
+              <text x="420" y="40" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Semimembranosus</text>
+              <circle cx="180" cy="280" r="35" fill="${isUS?'#000':'#ef4444'}" class="animate-pulse-artery" />
+              <circle cx="180" cy="190" r="30" fill="${isUS?'#111':'#3b82f6'}" opacity="0.8" />
+              <circle cx="360" cy="140" r="20" fill="${isUS?'#bbb':'#fde047'}" />
+              <circle cx="410" cy="160" r="14" fill="${isUS?'#bbb':'#fde047'}" />
+              <ellipse cx="385" cy="150" rx="60" ry="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6" />
+              <text x="300" y="90" fill="#fff" font-size="16" font-weight="bold" opacity="${lo}">Sciatic Nerve Complex</text>
+              <path d="M 325 150 A 60 40 0 1 0 445 150 A 60 40 0 1 0 325 150 M 340 150 A 25 15 0 1 1 400 150 A 25 15 0 1 1 340 150" fill="${isUS?'#111':'#06b6d4'}" class="${fluidClass}" style="transform-box: fill-box" fill-rule="evenodd" opacity="0.8" />
+              <g class="${needleClass}">
+                <line x1="580" y1="30" x2="445" y2="135" stroke="#fff" stroke-width="4" stroke-linecap="round" class="${isUS?'drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]':''}" />
+              </g>
+            </g>`;
+
+          default: return '';
+        }
+      };
+
+      return `
+        <svg viewBox="0 0 600 400" class="w-full h-full absolute inset-0">
+          <defs>
+            <filter id="usNoise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+              <feColorMatrix type="matrix" values="1 0 0 0 0, 1 0 0 0 0, 1 0 0 0 0, 0 0 0 1 0" />
+            </filter>
+            <clipPath id="sliderClip">
+              <rect id="sliderRect" x="0" y="0" width="${clipWidth}" height="400" />
+            </clipPath>
+            <clipPath id="usFan">
+              <path d="M 100 20 L 500 20 L 580 380 L 20 380 Z" />
+            </clipPath>
+          </defs>
+
+          <g clip-path="url(#usFan)">
+            <rect x="0" y="0" width="600" height="400" fill="#111" />
+            ${render('us')}
+          </g>
+
+          <g clip-path="url(#sliderClip)">
+             <rect x="0" y="0" width="600" height="400" fill="#1e293b" />
+             ${render('anatomy')}
+          </g>
+
+          <line id="sliderLine" x1="${clipWidth}" y1="0" x2="${clipWidth}" y2="400" stroke="#3b82f6" stroke-width="4" class="drop-shadow-lg" />
+        </svg>
+        
+        <input 
+          type="range" 
+          min="0" max="100" 
+          value="${val}" 
+          oninput="updateSlider(this.value)"
+          class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10"
+        />
+        
+        <div id="sliderHandle"
+          class="absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-full shadow-lg pointer-events-none transition-transform"
+          style="left: calc(${val}% - 16px)"
+        >
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        </div>
+
+        <div class="absolute top-4 left-4 right-4 flex justify-between pointer-events-none text-xs font-bold text-white uppercase tracking-wider">
+          <span class="bg-black/50 px-2 py-1 rounded backdrop-blur">Anatomical Overlay</span>
+          <span class="bg-black/50 px-2 py-1 rounded backdrop-blur">Simulated Ultrasound</span>
+        </div>
+      `;
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+
+  </script>
+</body>
+</html>
