@@ -4,17 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Regional Anaesthesia Guide</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmVnaW9uYWwgQW5hZXN0aGVzaWEiLCJzaG9ydF9uYW1lIjoiUkEgR3VpZGUiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmOGZhZmMiLCJ0aGVtZV9jb2xvciI6IiMxZTNhOGEiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMjQgMjQnPjxwYXRoIGZpbGw9JyMxZTNhOGEnIGQ9J00xMiAyQTYgNiAwIDEwMTIgMTRBNiA2IDAgMTAxMiAyWicvPjwvc3ZnPiIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
   <style>
     @keyframes scanSweep {
       0% { transform: translateX(30px); }
@@ -67,6 +61,7 @@
       #printArea { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; }
     }
   </style>
+    <link rel="stylesheet" href="tailwind.bundle.css">
 </head>
 <body class="bg-slate-50 transition-colors duration-200 text-slate-800 font-sans pb-12" id="bodyRoot">
 
