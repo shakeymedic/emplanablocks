@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Regional Anaesthesia Guide</title>
   <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmVnaW9uYWwgQW5hZXN0aGVzaWEiLCJzaG9ydF9uYW1lIjoiUkEgR3VpZGUiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmOGZhZmMiLCJ0aGVtZV9jb2xvciI6IiMxZTNhOGEiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMjQgMjQnPjxwYXRoIGZpbGw9JyMxZTNhOGEnIGQ9J00xMiAyQTYgNiAwIDEwMTIgMTRBNiA2IDAgMTAxMiAyWicvPjwvc3ZnPiIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
-
   <style>
     @keyframes scanSweep {
       0% { transform: translateX(30px); }
@@ -62,6 +58,14 @@
     }
   </style>
     <link rel="stylesheet" href="tailwind.bundle.css">
+    <!-- Install as an app (PWA) -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1e3a8a">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="RA Guide">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 </head>
 <body class="bg-slate-50 transition-colors duration-200 text-slate-800 font-sans pb-12" id="bodyRoot">
 
@@ -386,19 +390,6 @@
       buildQuickRefTable();
       lucide.createIcons();
       
-      if ('serviceWorker' in navigator) {
-        const swCode = `
-          const CACHE_NAME = 'ra-guide-v1';
-          self.addEventListener('install', e => {
-            e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll([location.href])));
-          });
-          self.addEventListener('fetch', e => {
-            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-          });
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('PWA SW failed:', err));
-      }
     }
 
     function toggleDarkMode() {
@@ -1274,5 +1265,6 @@ NURSING INSTRUCTIONS:
     document.addEventListener("DOMContentLoaded", init);
 
   </script>
+    <script src="sw-register.js"></script>
 </body>
 </html>
