@@ -38,6 +38,11 @@ for (const [name, viewport] of [['phone', { width: 360, height: 740 }], ['small-
     check(await page.locator('.block-card').count() === 6, `${name}: 6 blocks on home`);
     await noSideways('home');
     if (shots) await page.screenshot({ path: `${shots}/${name}-home.png`, fullPage: true });
+    check(await page.locator('.bodymap .zone').count() === 6, `${name}: 6 body map markers`);
+    await page.click('.bodymap .zone[data-block="popliteal"]');
+    await page.waitForSelector('#noteText');
+    check(page.url().endsWith('#/b/popliteal'), `${name}: body map marker opens the block`);
+    await page.goto(base);
 
     // Generic checklist without a Trust
     await page.click('.block-card[data-id="fib"]');
@@ -102,6 +107,10 @@ for (const [name, viewport] of [['phone', { width: 360, height: 740 }], ['small-
     await page.click('.tab >> text=Learn');
     await page.waitForSelector('.us-svg');
     await noSideways('learn');
+    await page.click('.seg[data-pane="scan"]');
+    await page.waitForFunction(() => { const i = document.querySelector('.scan-fig img'); return i && i.complete && i.naturalWidth > 0; });
+    check(await page.isVisible('.scan-fig .credit'), `${name}: real scan shown with credit`);
+    await page.click('.seg[data-pane="diagram"]');
     if (shots) await page.screenshot({ path: `${shots}/${name}-fib-learn.png`, fullPage: true });
     await page.click('.tab >> text=Do the block');
     check((await page.textContent('#noteText')).includes('Side: Left'), `${name}: entries kept across tabs`);

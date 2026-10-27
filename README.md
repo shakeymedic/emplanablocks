@@ -17,6 +17,15 @@ Static vanilla JavaScript PWA, no build step and no framework. Nothing the user 
 5. Add the key phrases to `tests/checklists.test.mjs`, and keep a copy of the source PDF outside the repository.
 6. Get the Trust's agreement before its text is published.
 
+## Teaching images
+
+- `js/sonoanatomy.js`: redrawn cross-section diagrams (anatomy and simplified ultrasound from the same shapes). Teaching drawings, not to scale.
+- `js/learnmedia.js`: real ultrasound scans from open-access articles under CC BY licences, with the authors' legends and full credits shown under each image. Figures that an article reproduces from a third party are not used.
+- `img/learn/*-probe.webp`: AI-generated probe-position illustrations, checked by eye. They are labelled as AI-generated in the app.
+- `js/bodymap.js`: home-page body figure with a marker for each block.
+
+Any new image must be added to `STATIC_ASSETS` in `sw.js`.
+
 ## Tests
 
 - `npm test`: smoke test (precached files exist, versions match) and unit tests (doses, notes, checklists, identifier warning).

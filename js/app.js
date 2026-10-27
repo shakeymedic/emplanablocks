@@ -4,10 +4,12 @@ import { TRUSTS, locssipFor, genericChecklist, trustById, isPastReview } from '.
 import { DRUGS, BLOCK_DRUGS, SKIN_DRUGS, maxDose, doseCheck, trustBand, idealBodyWeight, lipidDoses } from './dose.js';
 import { renderNote, freeText, anyContraindication, addMinutes, PROCEDURE_OPTIONS, COLD_OPTIONS, COMPLICATIONS, AFTER_INSTRUCTIONS } from './note.js';
 import { findIdentifiers } from './identifiers.js';
-import { probeSVG, ultrasoundSVG } from './visuals.js';
+import { sonoSVG, sonoNote } from './sonoanatomy.js';
+import { mediaFor } from './learnmedia.js';
+import { bodyMapSVG } from './bodymap.js';
 import { icon } from './icons.js';
 
-export const VERSION = '2.0.0';
+export const VERSION = '2.1.0';
 
 const main = document.getElementById('main');
 document.getElementById('version').textContent = VERSION;
@@ -88,30 +90,6 @@ function bullets(items) {
 // ---------------------------------------------------------------------------------------------
 // Home
 // ---------------------------------------------------------------------------------------------
-function bodyMapSVG(view) {
-    const base = `
-      <circle cx="80" cy="20" r="15"/><rect x="72" y="32" width="16" height="15"/>
-      <path d="M 40 50 Q 80 45 120 50 L 110 170 Q 80 180 50 170 Z"/>
-      <path d="M 40 50 L 20 130 L 30 135 L 45 70 Z"/><path d="M 120 50 L 140 130 L 130 135 L 115 70 Z"/>
-      <path d="M 20 130 L 10 210 L 25 210 L 30 135 Z"/><path d="M 140 130 L 150 210 L 135 210 L 130 135 Z"/>
-      <circle cx="17" cy="220" r="8"/><circle cx="143" cy="220" r="8"/>
-      <path d="M 50 170 Q 80 180 110 170 L 115 200 Q 80 220 45 200 Z"/>
-      <path d="M 45 200 L 40 290 L 70 290 L 80 210 Z"/><path d="M 115 200 L 120 290 L 90 290 L 80 210 Z"/>
-      <path d="M 40 290 L 45 370 L 65 370 L 70 290 Z"/><path d="M 120 290 L 115 370 L 95 370 L 90 290 Z"/>
-      <ellipse cx="55" cy="375" rx="12" ry="6"/><ellipse cx="105" cy="375" rx="12" ry="6"/>`;
-    const zones = view === 'front' ? [
-        ['sap', 'M 40 70 L 50 70 L 48 130 L 42 130 Z'], ['sap', 'M 120 70 L 110 70 L 112 130 L 118 130 Z'],
-        ['axillary', 'M 45 70 L 35 110 L 40 115 L 50 75 Z'], ['axillary', 'M 115 70 L 125 110 L 120 115 L 110 75 Z'],
-        ['fib', 'M 45 200 L 40 250 L 55 250 L 60 205 Z'], ['fib', 'M 115 200 L 120 250 L 105 250 L 100 205 Z'],
-        ['femoral', 'M 60 205 L 55 250 L 70 250 L 80 210 Z'], ['femoral', 'M 100 205 L 105 250 L 90 250 L 80 210 Z']
-    ] : [
-        ['esp', 'M 65 70 L 95 70 L 95 160 L 65 160 Z'],
-        ['popliteal', 'M 40 270 L 65 270 L 65 310 L 40 310 Z'], ['popliteal', 'M 95 270 L 120 270 L 120 310 L 95 310 Z']
-    ];
-    const z = zones.map(([id, d]) => `<path d="${d}" class="zone" data-block="${id}"><title>${blockById(id).name}</title></path>`).join('');
-    return `<svg viewBox="0 0 160 385" class="bodymap" role="img" aria-label="${view === 'front' ? 'Front' : 'Back'} of body"><g class="body-base">${base}</g><g>${z}</g></svg>`;
-}
-
 function blockCard(b) {
     const loc = locssipFor(trustId(), b.id);
     const t = trustById(trustId());
@@ -149,7 +127,7 @@ function renderHome() {
                     : 'Choose your Trust to use its LocSSIPs where they have been loaded. Saved on this device only.' }))),
         el('div', { class: 'home-grid' },
             el('section', { class: 'card map-card', 'aria-label': 'Body map' },
-                el('h2', { text: 'Tap a region' }),
+                el('h2', { text: 'Tap a block site' }),
                 el('div', { class: 'maps', id: 'maps' })),
             el('section', { class: 'block-groups' },
                 REGIONS.map((r) => el('div', { class: 'group' },
@@ -160,7 +138,8 @@ function renderHome() {
             el('span', {}, el('strong', { text: 'Maximum doses: ' }), 'bupivacaine and levobupivacaine 2 mg/kg (150 mg cap); lidocaine 3 mg/kg plain (200 mg cap), 7 mg/kg with adrenaline (500 mg cap). Doses of different local anaesthetics add together.')));
 
     const maps = document.getElementById('maps');
-    maps.innerHTML = bodyMapSVG('front') + bodyMapSVG('back');
+    const nameOf = (id) => blockById(id).name;
+    maps.innerHTML = bodyMapSVG('front', nameOf) + bodyMapSVG('back', nameOf);
     maps.querySelectorAll('.zone').forEach((z) => {
         z.setAttribute('tabindex', '0');
         z.setAttribute('role', 'link');
@@ -708,17 +687,26 @@ function printAdvice() {
 // ---------------------------------------------------------------------------------------------
 // Learn tab
 // ---------------------------------------------------------------------------------------------
+function creditLine(c) {
+    return el('p', { class: 'credit' },
+        `Image: ${c.authors.replace(/\.$/, '')}. ${c.journal} ${c.year}, ${c.figure}${c.cropped ? ` (${c.cropped.toLowerCase()})` : ''}. `,
+        el('a', { href: `https://doi.org/${c.doi}`, target: '_blank', rel: 'noopener noreferrer' }, `doi:${c.doi}`),
+        '. Licence ',
+        el('a', { href: c.licence[1], target: '_blank', rel: 'noopener noreferrer' }, c.licence[0]),
+        '.');
+}
+
 function renderLearn(block) {
-    let realUS = false;
     let val = 50;
+    const media = mediaFor(block.id);
     const stage = el('div', { class: 'us-stage' });
-    const range = el('input', { type: 'range', min: '0', max: '100', value: String(val), class: 'us-range', 'aria-label': 'Slide between anatomy and ultrasound' });
+    const range = el('input', { type: 'range', min: '0', max: '100', value: String(val), class: 'us-range', 'aria-label': 'Slide between the anatomy drawing and the ultrasound view' });
     const handle = el('div', { class: 'us-handle', 'aria-hidden': 'true' }, icon('sliders-horizontal', 16));
-    const labels = el('div', { class: 'us-labels', 'aria-hidden': 'true' }, el('span', { text: 'Anatomy' }), el('span', { id: 'usModeLabel', text: 'Simulated ultrasound' }));
+    const labels = el('div', { class: 'us-labels', 'aria-hidden': 'true' }, el('span', { text: 'Anatomy' }), el('span', { text: 'Ultrasound' }));
+    const wrap = el('div', { class: 'us-wrap' }, stage, range, handle, labels);
     const draw = () => {
-        stage.innerHTML = ultrasoundSVG(block.id, val, realUS);
+        stage.innerHTML = sonoSVG(block.id, val);
         handle.style.left = `calc(${val}% - 16px)`;
-        document.getElementById('usModeLabel') && (document.getElementById('usModeLabel').textContent = realUS ? 'Ultrasound reference' : 'Simulated ultrasound');
     };
     range.addEventListener('input', () => {
         val = Number(range.value);
@@ -728,19 +716,42 @@ function renderLearn(block) {
         if (line) { line.setAttribute('x1', w); line.setAttribute('x2', w); }
         handle.style.left = `calc(${val}% - 16px)`;
     });
-    const realBox = el('input', { type: 'checkbox', id: 'f-realUS' });
-    realBox.addEventListener('change', () => { realUS = realBox.checked; draw(); });
+    const hideBox = el('input', { type: 'checkbox', id: 'f-hideLabels' });
+    hideBox.addEventListener('change', () => wrap.classList.toggle('no-labels', hideBox.checked));
     const replay = el('button', { type: 'button', class: 'btn ghost small', onclick: draw }, icon('rotate-ccw', 16), 'Replay');
+
+    const diagramPane = el('div', { class: 'us-pane', id: 'pane-diagram' },
+        wrap,
+        el('div', { class: 'us-tools' }, el('label', { class: 'flag inline small' }, hideBox, el('span', { text: 'Hide labels (test yourself)' })), replay),
+        el('p', { class: 'us-note', text: sonoNote(block.id) }),
+        el('p', { class: 'hint', text: 'Drag across the picture to compare the anatomy with the ultrasound view. A simplified teaching drawing, not to scale and not a real scan.' }));
+    const scanPane = media ? el('figure', { class: 'us-pane scan-fig', id: 'pane-scan', hidden: true },
+        el('img', { src: media.scan.src, alt: media.scan.alt, width: String(media.scan.w), height: String(media.scan.h), loading: 'lazy', decoding: 'async' }),
+        el('figcaption', {}, el('p', { text: media.scan.legend }), creditLine(media.scan.credit))) : null;
+    const segBtn = (id, label, ic, on) => el('button', { type: 'button', class: 'seg', role: 'radio', 'aria-checked': on ? 'true' : 'false', 'data-pane': id }, icon(ic, 16), label);
+    const seg = el('div', { class: 'segmented', role: 'radiogroup', 'aria-label': 'Ultrasound view' },
+        segBtn('diagram', 'Diagram', 'pen-tool', true), media ? segBtn('scan', 'Real scan', 'image', false) : null);
+    seg.addEventListener('click', (e) => {
+        const b = e.target.closest('.seg');
+        if (!b) return;
+        seg.querySelectorAll('.seg').forEach((x) => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
+        diagramPane.hidden = b.dataset.pane !== 'diagram';
+        if (scanPane) scanPane.hidden = b.dataset.pane !== 'scan';
+        if (b.dataset.pane === 'diagram') draw();
+    });
+
+    const probeFig = media ? el('figure', { class: 'probe-fig' },
+        el('img', { src: media.probe.src, alt: media.probe.alt, width: String(media.probe.w), height: String(media.probe.h), loading: 'lazy', decoding: 'async' }),
+        el('figcaption', { text: 'AI-generated illustration, checked for patient and probe position. Not a photograph: find the exact spot on the scan, not on the skin.' })) : null;
 
     const view = el('div', { class: 'learn' },
         el('div', { class: 'learn-grid' },
             el('section', { class: 'card' },
-                el('div', { class: 'label-row' }, el('h2', { text: 'Ultrasound guide' }), el('label', { class: 'flag inline small' }, realBox, el('span', { text: 'Darker reference view' })), replay),
-                el('div', { class: 'us-wrap' }, stage, range, handle, labels),
-                el('p', { class: 'hint after', text: 'Drag across to compare the labelled anatomy with the ultrasound view. A teaching drawing, not a real scan.' })),
+                el('div', { class: 'label-row' }, el('h2', { text: 'Ultrasound view' }), seg),
+                diagramPane, scanPane),
             el('section', { class: 'card' },
                 el('h2', {}, icon('ruler', 18), ' Probe placement'),
-                el('div', { class: 'probe-wrap', id: 'probeWrap' }),
+                probeFig,
                 el('dl', { class: 'facts' },
                     el('dt', { text: 'Patient position' }), el('dd', { text: block.position }),
                     el('dt', { text: 'Probe position' }), el('dd', { text: block.probePosition }),
@@ -765,11 +776,7 @@ function renderLearn(block) {
             el('h2', { text: 'Needle visibility' }),
             bullets(['Alignment: keep the needle directly under the long axis of the probe footprint.', 'Tilt: use the heel-toe manoeuvre to keep the beam perpendicular to the needle shaft.', 'Hydrolocate: inject 1 ml of saline to find the tip if you lose it.']),
             el('p', {}, el('a', { href: block.link, target: '_blank', rel: 'noopener noreferrer' }, 'NYSORA technique page', icon('external-link', 14)))));
-    queueMicrotask(() => {
-        draw();
-        const pw = document.getElementById('probeWrap');
-        if (pw) pw.innerHTML = probeSVG(block.id);
-    });
+    queueMicrotask(draw);
     return view;
 }
 
