@@ -1,6 +1,6 @@
 // sw.js - Regional Anaesthesia Guide offline support. Bump SW_VERSION on every release.
 // Only the app's own files are cached. The app never sends or stores patient details.
-const SW_VERSION = 'ra-v2.0.0';
+const SW_VERSION = 'ra-v2.1.0';
 const STATIC_ASSETS = [
     './',
     './index.html',
@@ -13,7 +13,9 @@ const STATIC_ASSETS = [
     './js/dose.js',
     './js/note.js',
     './js/identifiers.js',
-    './js/visuals.js',
+    './js/sonoanatomy.js',
+    './js/learnmedia.js',
+    './js/bodymap.js',
     './js/icons.js',
     './fonts/inter-latin-wght-normal.woff2',
     './manifest.webmanifest',
@@ -21,7 +23,19 @@ const STATIC_ASSETS = [
     './icons/icon-192.png',
     './icons/icon-512.png',
     './icons/maskable-512.png',
-    './icons/apple-touch-icon.png'
+    './icons/apple-touch-icon.png',
+    './img/learn/sap-scan.webp',
+    './img/learn/sap-probe.webp',
+    './img/learn/esp-scan.webp',
+    './img/learn/esp-probe.webp',
+    './img/learn/axillary-scan.webp',
+    './img/learn/axillary-probe.webp',
+    './img/learn/fib-scan.webp',
+    './img/learn/fib-probe.webp',
+    './img/learn/femoral-scan.webp',
+    './img/learn/femoral-probe.webp',
+    './img/learn/popliteal-scan.webp',
+    './img/learn/popliteal-probe.webp'
 ];
 const LOGO = 'https://raw.githubusercontent.com/shakeymedic/wmem/main/emevidence_logo.png';
 
