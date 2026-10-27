@@ -1,96 +1,68 @@
-// Service worker: lets the app be installed on a phone and keeps working offline.
-// Pages and this site's own files are fetched from the network first, so an online user
-// always gets the latest version; the cached copy is only used when the network fails
-// or takes more than a few seconds. Fonts and libraries from other sites are served
-// from the cache and refreshed in the background.
-const CACHE = 'emplanablocks-v1';
-const PRECACHE = [
-  "./",
-  "index.html",
-  "tailwind.bundle.css",
-  "manifest.webmanifest",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "https://unpkg.com/lucide@latest"
+// sw.js - Regional Anaesthesia Guide offline support. Bump SW_VERSION on every release.
+// Only the app's own files are cached. The app never sends or stores patient details.
+const SW_VERSION = 'ra-v2.0.0';
+const STATIC_ASSETS = [
+    './',
+    './index.html',
+    './styles.css',
+    './theme-init.js',
+    './sw-register.js',
+    './js/app.js',
+    './js/blocks.js',
+    './js/checklists.js',
+    './js/dose.js',
+    './js/note.js',
+    './js/identifiers.js',
+    './js/visuals.js',
+    './js/icons.js',
+    './fonts/inter-latin-wght-normal.woff2',
+    './manifest.webmanifest',
+    './privacy.html',
+    './icons/icon-192.png',
+    './icons/icon-512.png',
+    './icons/maskable-512.png',
+    './icons/apple-touch-icon.png'
 ];
-const NETWORK_TIMEOUT_MS = 4000;
+const LOGO = 'https://raw.githubusercontent.com/shakeymedic/wmem/main/emevidence_logo.png';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE)
-      .then((cache) => Promise.all(PRECACHE.map((url) =>
-        cache.add(new Request(url, { cache: 'no-cache' })).catch(() => {}))))
-      .then(() => self.skipWaiting())
-  );
+    event.waitUntil(
+        caches.open(SW_VERSION)
+            .then((cache) => cache.addAll(STATIC_ASSETS.map((u) => new Request(u, { cache: 'reload' }))))
+            .then(() => self.skipWaiting())
+    );
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+    event.waitUntil(
+        caches.keys()
+            .then((keys) => Promise.all(keys.filter((k) => k !== SW_VERSION).map((k) => caches.delete(k))))
+            .then(() => self.clients.claim())
+    );
 });
 
-function isCacheable(response) {
-  return response && (response.ok || response.type === 'opaque');
-}
-
-function networkFirst(event) {
-  const request = event.request;
-  const network = fetch(request);
-  // Keep the cached copy up to date whenever the network answers.
-  event.waitUntil(network.then((response) => {
-    if (response && response.ok) {
-      const copy = response.clone();
-      return caches.open(CACHE).then((cache) => cache.put(request, copy));
-    }
-  }).catch(() => {}));
-  const cached = () => caches.match(request, { ignoreSearch: request.mode === 'navigate' })
-    .then((hit) => hit || (request.mode === 'navigate' ? caches.match('./') : undefined));
-  return new Promise((resolve, reject) => {
-    let settled = false;
-    const finish = (fn, value) => { if (!settled) { settled = true; fn(value); } };
-    const timer = setTimeout(() => {
-      cached().then((hit) => { if (hit) finish(resolve, hit); });
-    }, NETWORK_TIMEOUT_MS);
-    network.then((response) => {
-      clearTimeout(timer);
-      finish(resolve, response);
-    }, () => {
-      clearTimeout(timer);
-      cached().then((hit) => (hit ? finish(resolve, hit) : finish(reject, new Error('offline'))));
-    });
-  });
-}
-
-function staleWhileRevalidate(event) {
-  const request = event.request;
-  return caches.open(CACHE).then((cache) => cache.match(request).then((hit) => {
-    const network = fetch(request).then((response) => {
-      if (isCacheable(response)) cache.put(request, response.clone());
-      return response;
-    });
-    if (hit) {
-      event.waitUntil(network.catch(() => {}));
-      return hit;
-    }
-    return network;
-  }));
-}
-
+// Network first (so updates arrive), falling back to the cache when offline or slow.
 self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-  const url = new URL(request.url);
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') return;
-  if (url.origin === self.location.origin) {
-    if (/^\/(\.netlify|api|__)\//.test(url.pathname)) return;
-    event.respondWith(networkFirst(event));
-    return;
-  }
-  // Other sites: only static files (fonts, stylesheets, scripts, images); never API calls.
-  if (['style', 'font', 'script', 'image'].includes(request.destination)) {
-    event.respondWith(staleWhileRevalidate(event));
-  }
+    const req = event.request;
+    if (req.method !== 'GET') return;
+    const url = new URL(req.url);
+    const sameOrigin = url.origin === self.location.origin;
+    if (!sameOrigin && req.url !== LOGO) return;
+
+    event.respondWith((async () => {
+        const cache = await caches.open(SW_VERSION);
+        try {
+            const res = await Promise.race([
+                fetch(req),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+            ]);
+            if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone());
+            return res;
+        } catch (e) {
+            const cached = await cache.match(req, { ignoreSearch: sameOrigin });
+            if (cached) return cached;
+            if (req.mode === 'navigate') return cache.match('./index.html');
+            throw e;
+        }
+    })());
 });

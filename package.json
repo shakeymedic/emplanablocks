@@ -1,0 +1,11 @@
+{
+  "name": "emplanablocks",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Regional Anaesthesia Guide: ED nerve blocks with Trust LocSSIP checklists and a record note (static PWA, no build)",
+  "scripts": {
+    "test": "node scripts/smoke-test.js && node --test tests/*.test.mjs",
+    "e2e": "node tests/e2e.mjs"
+  }
+}
