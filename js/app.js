@@ -9,7 +9,7 @@ import { mediaFor } from './learnmedia.js';
 import { bodyMapSVG } from './bodymap.js';
 import { icon } from './icons.js';
 
-export const VERSION = '2.1.0';
+export const VERSION = '2.1.1';
 
 const main = document.getElementById('main');
 document.getElementById('version').textContent = VERSION;
