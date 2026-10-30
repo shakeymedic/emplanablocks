@@ -1,6 +1,6 @@
 // sw.js - Regional Anaesthesia Guide offline support. Bump SW_VERSION on every release.
 // Only the app's own files are cached. The app never sends or stores patient details.
-const SW_VERSION = 'ra-v2.1.0';
+const SW_VERSION = 'ra-v2.1.1';
 const STATIC_ASSETS = [
     './',
     './index.html',
