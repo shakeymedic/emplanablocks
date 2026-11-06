@@ -72,7 +72,7 @@ export const BLOCKS = [
         "probePosition": "Transverse, mid-axillary line, 5th rib.",
         "needleAngle": "Shallow (10-20 degrees)",
         "typicalVolume": "20-30ml of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/trunk/serratus-anterior-plane-block/"
+        "link": "https://nysora.com/regional-anesthesia/topics/regional-anesthesia-for-specific-surgical-procedures/thorax/pectoralis-serratus-plane-blocks/"
     },
     {
         "id": "esp",
@@ -141,7 +141,7 @@ export const BLOCKS = [
         "probePosition": "Sagittal, 3cm lateral to spinous process.",
         "needleAngle": "Steep (30-45 degrees)",
         "typicalVolume": "20-30ml of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/trunk/erector-spinae-plane-block/"
+        "link": "https://nysora.com/erector-spinae-plane-block/"
     },
     {
         "id": "axillary",
@@ -210,7 +210,7 @@ export const BLOCKS = [
         "probePosition": "Transverse, high in the axillary crease.",
         "needleAngle": "Shallow (10-20 degrees)",
         "typicalVolume": "15-20ml total of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/upper-extremity/axillary-brachial-plexus-block/"
+        "link": "https://nysora.com/regional-anesthesia/techniques/upper-extremity/axillary/axillary-brachial-plexus-block/"
     },
     {
         "id": "fib",
@@ -276,7 +276,7 @@ export const BLOCKS = [
         "probePosition": "Transverse, lateral to femoral vessels.",
         "needleAngle": "Moderate (20-30 degrees)",
         "typicalVolume": "30-40ml of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/lower-extremity/fascia-iliaca-block/"
+        "link": "https://nysora.com/regional-anesthesia/topics/regional-anesthesia-for-specific-surgical-procedures/lower-extremity-regional-anesthesia-for-specific-surgical-procedures/ultrasound-guided-fascia-iliaca-block/"
     },
     {
         "id": "femoral",
@@ -344,7 +344,7 @@ export const BLOCKS = [
         "probePosition": "Transverse, directly over femoral crease.",
         "needleAngle": "Moderate (20-30 degrees)",
         "typicalVolume": "15-20ml of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/lower-extremity/femoral-nerve-block/"
+        "link": "https://nysora.com/regional-anesthesia/techniques/lower-extremity/femoral/femoral-nerve-block/"
     },
     {
         "id": "popliteal",
@@ -412,7 +412,7 @@ export const BLOCKS = [
         "probePosition": "Transverse, 5-10cm proximal to popliteal crease.",
         "needleAngle": "Steep (30-45 degrees)",
         "typicalVolume": "15-20ml of 0.25% Levobupivacaine",
-        "link": "https://www.nysora.com/techniques/lower-extremity/popliteal-sciatic-nerve-block/"
+        "link": "https://nysora.com/regional-anesthesia/topics/regional-anesthesia-for-specific-surgical-procedures/lower-extremity-regional-anesthesia-for-specific-surgical-procedures/foot-and-anckle/ultrasound-guided-popliteal-sciatic-block/"
     }
 ];
 
